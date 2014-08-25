@@ -1,8 +1,9 @@
 logger = require "logger-sharelatex"
 settings = require "settings-sharelatex"
 async  = require "async"
+request = require "request"
 
-{publicUrl, mountPoint} = settings.internal.github_latex_ci
+{publicUrl, mountPoint, userAgent} = settings.internal.github_latex_ci
 
 module.exports = RepositoryController =
 	list: (req, res, next) ->
@@ -29,8 +30,16 @@ module.exports = RepositoryController =
 				return next(error) if error?
 				res.render "repos/list", repos: repos
 				
-	
-			
+	proxyBlob: (req, res, next) ->
+		url = req.url
+		url = url.slice(mountPoint.length)
+		request.get({
+			uri: "https://api.github.com#{url}",
+			headers:
+				"Accept": "application/vnd.github.v3.raw"
+				"User-Agent": userAgent
+		}).pipe(res)
+		
 	_getOrgs: (req, callback = (error, orgs) ->) ->
 		req.ghclient.me().orgs callback
 		

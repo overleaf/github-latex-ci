@@ -17,6 +17,7 @@ rclient.auth(settings.redis.web.password)
 AuthenticationController = require "./app/js/AuthenticationController"
 RepositoryController = require "./app/js/RepositoryController"
 WebHookController = require "./app/js/WebHookController"
+BuildController = require "./app/js/BuildController"
 
 app.set('views', './app/views')
 app.set('view engine', 'jade')
@@ -44,8 +45,11 @@ app.get("#{mountPoint}/login", AuthenticationController.login)
 app.get("#{mountPoint}/auth",  AuthenticationController.auth)
 
 app.get("#{mountPoint}/repos", AuthenticationController.requireLogin, RepositoryController.list)
+app.get("#{mountPoint}/repos/:owner/:repo/git/blobs/:sha", RepositoryController.proxyBlob)
 
 app.post("#{mountPoint}/repos/:owner/:repo/hook", AuthenticationController.requireLogin, WebHookController.createHook)
+
+app.get("#{mountPoint}/repos/:owner/:repo/build/:sha", AuthenticationController.requireLogin, BuildController.buildRepo)
 
 port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host

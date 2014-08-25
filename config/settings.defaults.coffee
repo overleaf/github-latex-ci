@@ -8,9 +8,15 @@ module.exports =
 	internal:
 		github_latex_ci:
 			mountPoint: "/github"
+			url: "http://localhost:3020"
 			publicUrl: "http://localhost:3020"
 			host: "localhost"
 			port: 3020
+			userAgent: "sharelatex/github-latex-ci"
+			
+	apis:
+		clsi:
+			url: "http://localhost:3013"
 			
 	github:
 		client_id:     process.env.GITHUB_CLIENT_ID
