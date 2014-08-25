@@ -5,8 +5,9 @@ module.exports = WebHookManager =
 		db.githubWebHooks.update({
 			repo: repo
 		}, {
-			hook_id: id,
-			secret: secret
+			$set:
+				hook_id: id,
+				secret: secret
 		}, {
 			upsert: true
 		}, callback)
