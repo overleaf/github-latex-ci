@@ -1,5 +1,8 @@
 logger = require "logger-sharelatex"
+settings = require "settings-sharelatex"
 async  = require "async"
+
+{publicUrl, mountPoint} = settings.internal.github_latex_ci
 
 module.exports = RepositoryController =
 	list: (req, res, next) ->
@@ -25,6 +28,8 @@ module.exports = RepositoryController =
 			async.series jobs, (error) ->
 				return next(error) if error?
 				res.render "repos/list", repos: repos
+				
+	
 			
 	_getOrgs: (req, callback = (error, orgs) ->) ->
 		req.ghclient.me().orgs callback

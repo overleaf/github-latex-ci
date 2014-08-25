@@ -26,6 +26,7 @@
     "express-session": "^1.7.6",
     "jade": "^1.5.0",
     "logger-sharelatex": "git+https://github.com/sharelatex/logger-sharelatex.git#v1.0.0",
+    "mongojs": "^0.14.0",
     "octonode": "^0.6.4",
     "redis": "^0.12.1",
     "settings-sharelatex": "git+https://github.com/sharelatex/settings-sharelatex.git#v1.0.0"

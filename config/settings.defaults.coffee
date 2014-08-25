@@ -8,6 +8,7 @@ module.exports =
 	internal:
 		github_latex_ci:
 			mountPoint: "/github"
+			publicUrl: "http://localhost:3020"
 			host: "localhost"
 			port: 3020
 			
@@ -20,6 +21,10 @@ module.exports =
 			host: "localhost"
 			port: "6379"
 			password: ""
+			
+	mongo:
+		url: 'mongodb://127.0.0.1/sharelatex'
+
 			
 	security:
 		sessionSecret: "banana"

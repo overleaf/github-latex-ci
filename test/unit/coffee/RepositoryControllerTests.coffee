@@ -7,7 +7,9 @@ chai.should()
 describe "RespositoryController", ->
 	beforeEach ->
 		@RepositoryController = sandboxedModule.require modulePath, requires:
-			"logger-sharelatex": @logger = { log: sinon.stub, error: sinon.stub() }
+			"logger-sharelatex": @logger = { log: sinon.stub(), error: sinon.stub() }
+			"settings-sharelatex":
+				internal: github_latex_ci: { publicUrl: "http://example.com", mountPoint: "/github" }
 	
 	describe "list", ->
 		it "should return all personal and organisation repos", ->
@@ -49,4 +51,3 @@ describe "RespositoryController", ->
 			@res.render
 				.calledWith("repos/list", repos: personalRepos.concat(org1Repos).concat(org2Repos))
 				.should.equal true
-	
