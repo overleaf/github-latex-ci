@@ -14,18 +14,18 @@ s3client = knox.createClient {
 }
 
 module.exports = BuildManager =
-	buildAndSaveRepo: (ghclient, repo, sha, callback = (error) ->) ->
+	buildCommit: (ghclient, repo, sha, callback = (error) ->) ->
 		BuildManager._getCommit ghclient, repo, sha, (error, commit) ->
 			return callback(error) if error?
 			commit =
 				message: commit.commit.message
 				author:  commit.commit.author
 			logger.log commit: commit, repo: repo, sha: sha, "building repo"
-			BuildManager.buildRepo ghclient, repo, sha, (error, status, outputFiles) ->
+			BuildManager.compileCommit ghclient, repo, sha, (error, status, outputFiles) ->
 				return callback(error) if error?
-				BuildManager.saveBuild repo, sha, commit, status, outputFiles, callback
+				BuildManager.saveCompile repo, sha, commit, status, outputFiles, callback
 
-	buildRepo: (ghclient, repo, sha, callback = (error, status, outputFiles) ->) ->
+	compileCommit: (ghclient, repo, sha, callback = (error, status, outputFiles) ->) ->
 		BuildManager._getTree ghclient, repo, sha, (error, tree) ->
 			return callback(error) if error?
 			BuildManager._createClsiRequest tree, (error, clsiRequest) ->
@@ -36,7 +36,7 @@ module.exports = BuildManager =
 					logger.log response: response, "got CLSI response"
 					callback(null, response?.compile?.status, response?.compile?.outputFiles)
 	
-	saveBuild: (repo, sha, commit, status, outputFiles, callback = (error) ->) ->
+	saveCompile: (repo, sha, commit, status, outputFiles, callback = (error) ->) ->
 		BuildManager._saveBuildInDatabase repo, sha, commit, status, (error) ->
 			return callback(error) if error?
 			
@@ -60,13 +60,16 @@ module.exports = BuildManager =
 		}, (error, builds = []) ->
 			return callback(error) if error?
 			callback null, builds[0]
+			
+	markBuildAsInProgress: (repo, sha, callback = (error) ->) ->
+		BuildManager._saveBuildInDatabase repo, sha, null, "in_progress", callback
 	
 	_getTree: (ghclient, repo, sha, callback = (error, tree) ->) ->
 		ghclient.repo(repo).tree(sha, true, callback)
 		
 	_getCommit: (ghclient, repo, sha, callback = (error, commit) ->) ->
 		ghclient.repo(repo).commit(sha, callback)
-		
+
 	_createClsiRequest: (tree, callback = (error, clsiRequest) ->) ->
 		resources = []
 		for entry in tree.tree or []
@@ -101,9 +104,7 @@ module.exports = BuildManager =
 		}, {
 			$set:
 				status: status
-				commit:
-					message: commit.message
-					author: commit.author
+				commit: commit
 		}, {
 			upsert: true
 		}, callback)

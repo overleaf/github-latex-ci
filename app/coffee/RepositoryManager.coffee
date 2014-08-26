@@ -38,6 +38,11 @@ module.exports = RepositoryManager =
 				if webhooksDict[repo.full_name]
 					repo.webhook = true
 			callback null, repos
+	
+	getLatestCommit: (ghclient, repo, callback = (error, sha) ->) ->
+		ghclient.repo(repo).branch "master", (error, branch) ->
+			return callback(error) if error?
+			callback null, branch?.commit?.sha
 		
 	_getOrgs: (ghclient, callback = (error, orgs) ->) ->
 		ghclient.me().orgs callback

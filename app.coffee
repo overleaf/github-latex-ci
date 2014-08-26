@@ -61,8 +61,8 @@ app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/
 		req.params = params
 		next()
 	, AuthenticationController.requireLogin, BuildController.downloadOutputFile
-
-console.log regex
+	
+app.post("#{mountPoint}/repos/:owner/:repo/builds/latest", AuthenticationController.requireLogin, BuildController.buildLatestCommit)
 
 port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host

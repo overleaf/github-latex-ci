@@ -5,28 +5,36 @@ block content
 		h1
 			a(href="#{settings.mountPoint}/repos/#{build.repo}/builds") #{repo}
 	
-	blockquote
-		p= build.commit.message
-		footer
-			| by #{build.commit.author.name} on #{build.commit.author.date}
-	
-	if build.status == "success"
-		.alert.alert-success
-			.row
-				.col-xs-12
-					a.btn.btn-success(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/output.pdf") Download PDF
-					| &nbsp;&nbsp;Build was successful!
+	if build.status == "in_progress"
+		.alert.alert-info
+			| Building...
+		script(type="text/javascript").
+			setTimeout(function() {
+				window.location.reload();
+			}, 5000)
 	else
-		.alert.alert-danger
-			.row
-				.col-xs-12
-					| Something went wrong compiling your PDF, sorry :(
-	
-	hr
-	
-	h3 All Output Files
-	ul
-		each file in outputFiles
-			li
-				a(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/#{file}")= file
+		blockquote
+			p= build.commit.message
+			footer
+				| by #{build.commit.author.name} on #{build.commit.author.date}
+		
+		if build.status == "success"
+			.alert.alert-success
+				.row
+					.col-xs-12
+						a.btn.btn-success(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/output.pdf") Download PDF
+						| &nbsp;&nbsp;Build was successful!
+		else
+			.alert.alert-danger
+				.row
+					.col-xs-12
+						| Something went wrong compiling your PDF, sorry :(
+		
+		hr
+		
+		h3 All Output Files
+		ul
+			each file in outputFiles
+				li
+					a(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/#{file}")= file
 		

@@ -1,12 +1,25 @@
 BuildManager = require "./BuildManager"
+RepositoryManager = require "./RepositoryManager"
+settings = require "settings-sharelatex"
+mountPoint = settings.internal.github_latex_ci.mountPoint
 
 module.exports = BuildController =
-	buildRepo: (req, res, next) ->
+	buildLatestCommit: (req, res, next) ->
+		{owner, repo} = req.params
+		repo = "#{owner}/#{repo}"
+		RepositoryManager.getLatestCommit req.ghclient, repo, (error, sha) ->
+			return next(error) if error?
+			req.params.sha = sha
+			BuildController.buildCommit(req, res, next)
+
+	buildCommit: (req, res, next) ->
 		{sha, owner, repo} = req.params
 		repo = "#{owner}/#{repo}"
-		BuildManager.buildAndSaveRepo req.ghclient, repo, sha, (error) ->
+		BuildManager.markBuildAsInProgress repo, sha, (error) ->
 			return next(error) if error?
-			res.status(200).end()
+			# Build in the background
+			BuildManager.buildCommit req.ghclient, repo, sha
+			res.redirect "#{mountPoint}/repos/#{repo}/builds/#{sha}"
 			
 	listBuilds: (req, res, next) ->
 		{owner, repo} = req.params

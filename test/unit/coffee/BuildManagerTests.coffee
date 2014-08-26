@@ -19,7 +19,7 @@ describe "BuildManager", ->
 		@ghclient = "mock-ghclient"
 		@callback = sinon.stub()
 	
-	describe "buildRepo", ->
+	describe "compileCommit", ->
 		beforeEach ->
 			@tree = {
 				tree: [{
@@ -44,7 +44,7 @@ describe "BuildManager", ->
 			@BuildManager._getTree = sinon.stub().callsArgWith(3, null, @tree)
 			@BuildManager._sendClsiRequest = sinon.stub().callsArgWith(2, null, @clsiRes)
 			
-			@BuildManager.buildRepo(@ghclient, @repo, @sha, @callback)
+			@BuildManager.compileCommit(@ghclient, @repo, @sha, @callback)
 					
 		it "should get the tree from Github", ->
 			@BuildManager._getTree
@@ -73,12 +73,12 @@ describe "BuildManager", ->
 				.calledWith(null, @clsiRes.compile.status, @clsiRes.compile.outputFiles)
 				.should.equal true
 				
-	describe "saveBuild", ->
+	describe "saveCompile", ->
 		beforeEach ->
 			@BuildManager._saveBuildInDatabase = sinon.stub().callsArg(4)
 			@BuildManager._saveOutputFileToS3 = sinon.stub().callsArg(3)
 			
-			@BuildManager.saveBuild @repo, @sha, @commit = {
+			@BuildManager.saveCompile @repo, @sha, @commit = {
 				message: "message", author: "author"
 			}, @status = "success", @outputFiles = [{
 				"url": "http://localhost:3013/project/project-id/output/output.log",
