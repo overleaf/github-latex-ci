@@ -8,7 +8,7 @@ module.exports =
 		auth_url = github.auth.config({
 			id:     settings.github.client_id,
 			secret: settings.github.client_secret
-		}).login(['user:email', 'read:org', 'repo:status', 'write:repo_hook'])
+		}).login(['user:email', 'read:org', 'repo:status', 'admin:repo_hook'])
 		req.session ||= {}
 		req.session.state = auth_url.match(/&state=([0-9a-z]{32})/i)[1];
 		logger.log state: req.session.state, url: auth_url, "redirecting to github login page"

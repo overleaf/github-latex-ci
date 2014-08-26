@@ -48,6 +48,7 @@ app.get("#{mountPoint}/repos", AuthenticationController.requireLogin, Repository
 app.get("#{mountPoint}/repos/:owner/:repo/git/blobs/:sha", RepositoryController.proxyBlob)
 
 app.post("#{mountPoint}/repos/:owner/:repo/hook", AuthenticationController.requireLogin, WebHookController.createHook)
+app.post("#{mountPoint}/repos/:owner/:repo/hook/destroy", AuthenticationController.requireLogin, WebHookController.destroyHook)
 
 app.get("#{mountPoint}/repos/:owner/:repo/builds", AuthenticationController.requireLogin, BuildController.listBuilds)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", AuthenticationController.requireLogin, BuildController.showBuild)
