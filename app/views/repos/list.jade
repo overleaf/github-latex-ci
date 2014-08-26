@@ -1,15 +1,33 @@
 extends ../layout
 
 block content
-	ul
-		each repo in repos
-			li
-				a(href=repo.html_url)= repo.full_name
+	.page-header
+		h1 Your Github Repositories
+
+	table.table.table-hover
+		thead
+			tr
+				th Repos
+		tbody
+			each repo in repos
 				if repo.webhook
-					div
-						strong Linked! 
-						a(href="#{settings.mountPoint}/repos/#{repo.full_name}/builds") View builds
+					tr.info
+						td
+							.row
+								.col-xs-8
+									p
+										strong
+											a(href="#{settings.mountPoint}/repos/#{repo.full_name}/builds")= repo.full_name
+								.col-xs-4.text-right
+									button.btn.btn-danger Unlink
 				else
-					form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook", method="POST")
-						button(type="submit") Create Hook
+					tr
+						td
+							.row
+								.col-xs-8
+									p= repo.full_name
+								.col-xs-4.text-right
+									form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook", method="POST")
+										button.btn.btn-info(type="submit") Create Hook
+							
 		

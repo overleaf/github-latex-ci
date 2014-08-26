@@ -1,10 +1,25 @@
 extends ../layout
 
 block content
-	h1 #{repo} builds
-	ul
-		each build in builds
-			li
-				a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
-				span  #{build.commit.author.name}, #{build.status}
+	.page-header
+		h1
+			a(href="#{settings.mountPoint}/repos/#{repo}/builds") #{repo}
+		
+	table.table.table-hover
+		thead
+			tr
+				th Builds
+		tbody
+			each build in builds
+				tr
+					td
+						.row
+							.col-xs-10
+								a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
+								.small by #{build.commit.author.name} on #{build.commit.author.date}
+							strong.col-xs-2.text-right
+								if build.status == "success"
+									.text-success Success!
+								else
+									.text-danger Failed :(
 		
