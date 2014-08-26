@@ -4,6 +4,13 @@ if !process.env.GITHUB_CLIENT_ID? or !process.env.GITHUB_CLIENT_SECRET?
 	"""
 	process.exit(1)
 
+if !process.env.AWS_ACCESS_KEY? or !process.env.AWS_SECRET_KEY?
+	console.log """
+		Please set AWS_ACCESS_KEY and AWS_SECRET_KEY environment variables
+	"""
+	process.exit(1)
+
+
 module.exports =
 	internal:
 		github_latex_ci:
@@ -31,6 +38,10 @@ module.exports =
 	mongo:
 		url: 'mongodb://127.0.0.1/sharelatex'
 
+	s3:
+		key:    process.env.AWS_ACCESS_KEY
+		secret: process.env.AWS_SECRET_KEY
+		github_latex_ci_bucket: "sl-github-latex-ci-dev"
 			
 	security:
 		sessionSecret: "banana"

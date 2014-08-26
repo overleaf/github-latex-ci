@@ -2,9 +2,16 @@ request = require "request"
 logger = require "logger-sharelatex"
 settings = require "settings-sharelatex"
 async = require "async"
+knox = require "knox"
 {db, ObjectId} = require "./mongojs"
 
 {url, mountPoint} = settings.internal.github_latex_ci
+
+s3client = knox.createClient {
+	key:    settings.s3.key
+	secret: settings.s3.secret
+	bucket: settings.s3.github_latex_ci_bucket
+}
 
 module.exports = BuildManager =
 	buildAndSaveRepo: (ghclient, repo, sha, callback = (error) ->) ->
@@ -77,5 +84,20 @@ module.exports = BuildManager =
 		}, callback)
 		
 	_saveOutputFileToS3: (repo, sha, sourceUrl, callback = (error) ->) ->
-		logger.log repo: repo, sha: sha, url: sourceUrl, "TODO! saving output file"
-		callback()
+		m = sourceUrl.match(/\/project\/[^\/]+\/output\/(.*)$/)
+		name = m[1]
+		name = "#{repo}/#{sha}/#{name}"
+
+		logger.log url: sourceUrl, location: name, "saving output file"
+
+		req = request.get sourceUrl
+		req.on "response", (res) ->
+			headers = {
+				'Content-Length': res.headers['content-length']
+				'Content-Type':   res.headers['content-type']
+			}
+			logger.log location: name, content_length: res.headers['content-length'], "streaming to S3"
+			s3client.putStream res, name, headers, (error, s3Req) ->
+				return callback(error) if error?
+				s3Req.resume()
+				s3Req.on "end", callback
