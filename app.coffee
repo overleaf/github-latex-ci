@@ -49,7 +49,9 @@ app.get("#{mountPoint}/repos/:owner/:repo/git/blobs/:sha", RepositoryController.
 
 app.post("#{mountPoint}/repos/:owner/:repo/hook", AuthenticationController.requireLogin, WebHookController.createHook)
 
-app.get("#{mountPoint}/repos/:owner/:repo/build/:sha", AuthenticationController.requireLogin, BuildController.buildRepo)
+app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", AuthenticationController.requireLogin, BuildController.showBuild)
+app.get("#{mountPoint}/repos/:owner/:repo/builds", AuthenticationController.requireLogin, BuildController.listBuilds)
+
 
 port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host

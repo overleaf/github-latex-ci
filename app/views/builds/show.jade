@@ -1,0 +1,12 @@
+extends ../layout
+
+block content
+	h1 #{repo} build: #{build.commit.message}
+	
+	p Status: #{build.status}
+	
+	h2 Output Files
+	ul
+		each file in outputFiles
+			li= file
+		

@@ -47,6 +47,19 @@ module.exports = BuildManager =
 						BuildManager._saveOutputFileToS3 repo, sha, file.url, callback
 						
 			async.parallelLimit jobs, 5, callback
+			
+	getBuilds: (ghclient, repo, callback = (error, builds) ->) ->
+		db.githubBuilds.find({
+			repo: repo
+		}, callback)
+		
+	getBuild: (ghclient, repo, sha, callback = (error, builds) ->) ->
+		db.githubBuilds.find {
+			repo: repo
+			sha: sha
+		}, (error, builds = []) ->
+			return callback(error) if error?
+			callback null, builds[0]
 	
 	_getTree: (ghclient, repo, sha, callback = (error, tree) ->) ->
 		ghclient.repo(repo).tree(sha, true, callback)
@@ -113,3 +126,13 @@ module.exports = BuildManager =
 				return callback(error) if error?
 				s3Req.resume()
 				s3Req.on "end", callback
+				
+	getOutputFiles: (repo, sha, callback = (error, files) ->) ->
+		prefix = "#{repo}/#{sha}"
+		logger.log prefix: prefix, "listing output files"
+		s3client.list { prefix: prefix }, (error, data) ->
+			return callback(error) if error?
+			files = []
+			for file in data.Contents
+				files.push file.Key.slice(prefix.length + 1)
+			callback null, files

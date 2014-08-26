@@ -1,0 +1,10 @@
+extends ../layout
+
+block content
+	h1 #{repo} builds
+	ul
+		each build in builds
+			li
+				a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
+				span  #{build.commit.author.name}, #{build.status}
+		
