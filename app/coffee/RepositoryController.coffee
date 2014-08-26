@@ -12,7 +12,9 @@ module.exports = RepositoryController =
 			return next(error) if error?
 			RepositoryManager.injectWebHookStatus repos, (error, repos) ->
 				return next(error) if error?
-				res.render "repos/list", repos: repos
+				res.render "repos/list",
+					active_repos: repos.filter (r) -> r.webhook
+					other_repos: repos.filter (r) -> !r.webhook
 				
 	proxyBlob: (req, res, next) ->
 		url = req.url

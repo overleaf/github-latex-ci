@@ -4,31 +4,37 @@ block content
 	.page-header
 		h1 Your Github Repositories
 
-	table.table.table-hover
-		thead
-			tr
-				th Repos
-		tbody
-			each repo in repos
-				if repo.webhook
-					tr.info
-						td
-							.row
-								.col-xs-8
-									p
-										strong
-											a(href="#{settings.mountPoint}/repos/#{repo.full_name}/builds")= repo.full_name
-								.col-xs-4.text-right
-									form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook/destroy", method="POST")
-										button.btn.btn-danger(type="submit") Unlink
-				else
+	- if (active_repos.length > 0)
+		table.table.table-hover.table-striped
+			thead
+				tr
+					th Active Repos
+			tbody
+				each repo in active_repos
 					tr
 						td
 							.row
 								.col-xs-8
-									p= repo.full_name
+									a(href=repo.html_url)= repo.full_name
 								.col-xs-4.text-right
-									form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook", method="POST")
-										button.btn.btn-info(type="submit") Create Hook
+									form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook/destroy", method="POST")
+										a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo.full_name}/builds") View Latest PDF
+										| 
+										button.btn.btn-danger(type="submit") Turn Off								
+		
+	table.table.table-hover.table-striped
+		thead
+			tr
+				th Your Repos
+		tbody
+			each repo in other_repos
+				tr
+					td
+						.row
+							.col-xs-8
+								a(href=repo.html_url)= repo.full_name
+							.col-xs-4.text-right
+								form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook", method="POST")
+									button.btn.btn-default(type="submit") Turn On
 							
 		

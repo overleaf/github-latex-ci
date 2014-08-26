@@ -19,16 +19,24 @@ module.exports = BuildController =
 			return next(error) if error?
 			# Build in the background
 			BuildManager.buildCommit req.ghclient, repo, sha
-			res.redirect "#{mountPoint}/repos/#{repo}/builds/#{sha}"
+			res.redirect "#{mountPoint}/repos/#{repo}/builds"
 			
 	listBuilds: (req, res, next) ->
 		{owner, repo} = req.params
 		repo = "#{owner}/#{repo}"
-		BuildManager.getBuilds repo, (error, builds) ->
+		RepositoryManager.getLatestCommit req.ghclient, repo, (error, sha) ->
 			return next(error) if error?
-			res.render "builds/list",
-				repo: repo,
-				builds: builds
+			BuildManager.getBuild repo, sha, (error, latestBuild) ->
+				return next(error) if error?
+				BuildManager.getOutputFiles repo, sha, (error, outputFiles) ->
+					return next(error) if error?
+					BuildManager.getBuilds repo, (error, builds) ->
+						return next(error) if error?
+						res.render "builds/list",
+							repo: repo,
+							builds: builds
+							latestBuild: latestBuild
+							outputFiles: outputFiles
 				
 	showBuild: (req, res, next) ->
 		{sha, owner, repo} = req.params

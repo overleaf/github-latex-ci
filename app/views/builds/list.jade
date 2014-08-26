@@ -2,43 +2,50 @@ extends ../layout
 
 block content
 	.page-header
+		.pull-right
+			a(href, data-toggle="modal", data-target="#badge-modal")
+				img(src="#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg")
 		h1
 			a(href="#{settings.mountPoint}/repos/#{repo}/builds") #{repo}
-			
-	p
-		.row
-			.col-xs-6
-				form(action="#{settings.mountPoint}/repos/#{repo}/builds/latest", method="POST")
-					input.btn.btn-primary(type="submit", value="Build Now")
-			.col-xs-6.text-right
-				a(href, data-toggle="modal", data-target="#badge-modal")
-					img(src="#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg")
 				
-			div.modal.fade#badge-modal(tabindex="-1" role="dialog" aria-labelledby="badgeModal" aria-hidden="true")
-				.modal-dialog
-					.modal-content
-						.modal-body
-							h3 Image URL
-							pre #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg
-							h3 Markdown
-							pre [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds)
+	div.modal.fade#badge-modal(tabindex="-1" role="dialog" aria-labelledby="badgeModal" aria-hidden="true")
+		.modal-dialog
+			.modal-content
+				.modal-body
+					h3 Image URL
+					pre #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg
+					h3 Markdown
+					pre [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds)
+
+	ul.nav.nav-tabs(role="tablist")
+		li.active
+			a(href="#latestBuild", role="tab", data-toggle="tab") Latest
+		li
+			a(href="#previousBuilds", role="tab", data-toggle="tab") Previous Versions
+		li.pull-right
+			form(action="#{settings.mountPoint}/repos/#{repo}/builds/latest", method="POST")
+				input.btn.btn-primary(type="submit", value="Build Now")
 	
-	p
-		table.table.table-hover
-			thead
-				tr
-					th Builds
-			tbody
-				each build in builds
-					tr
-						td
-							.row
-								.col-xs-10
-									a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
-									.small by #{build.commit.author.name} on #{build.commit.author.date}
-								strong.col-xs-2.text-right
-									if build.status == "success"
-										a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}/output/output.pdf") Download PDF
-									else
-										button.btn.btn-danger(disabled) Failed :(
+	.tab-content
+		.tab-pane.active#latestBuild
+			- var build = latestBuild
+			include ./_build
+		.tab-pane#previousBuilds
+			table.table.table-hover.table-striped
+				tbody
+					each build in builds
+						tr
+							td
+								.row
+									.col-xs-10
+										- if (build.commit)
+											a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
+											.small by #{build.commit.author.name} on #{build.commit.author.date}
+										- else
+											| Building...
+									strong.col-xs-2.text-right
+										if build.status == "success"
+											a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}/output/output.pdf") Download PDF
+										else
+											button.btn.btn-danger(disabled) Failed :(
 		
