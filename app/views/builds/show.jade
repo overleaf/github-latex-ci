@@ -8,5 +8,6 @@ block content
 	h2 Output Files
 	ul
 		each file in outputFiles
-			li= file
+			li
+				a(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/#{file}")= file
 		

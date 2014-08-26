@@ -28,3 +28,11 @@ module.exports = BuildController =
 					repo: repo,
 					build: build,
 					outputFiles: outputFiles
+					
+	downloadOutputFile: (req, res, next) ->
+		{sha, owner, repo, path} = req.params
+		repo = "#{owner}/#{repo}"
+		BuildManager.getOutputFileStream repo, sha, path, (error, s3res) ->
+			return next(error) if error?
+			res.header("Content-Length", s3res.headers['content-length'])
+			s3res.pipe(res)

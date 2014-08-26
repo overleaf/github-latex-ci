@@ -136,3 +136,7 @@ module.exports = BuildManager =
 			for file in data.Contents
 				files.push file.Key.slice(prefix.length + 1)
 			callback null, files
+			
+	getOutputFileStream: (repo, sha, name, callback = (error, res) ->) ->
+		path = "#{repo}/#{sha}/#{name}"
+		s3client.getFile path, callback

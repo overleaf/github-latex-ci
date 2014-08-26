@@ -49,9 +49,20 @@ app.get("#{mountPoint}/repos/:owner/:repo/git/blobs/:sha", RepositoryController.
 
 app.post("#{mountPoint}/repos/:owner/:repo/hook", AuthenticationController.requireLogin, WebHookController.createHook)
 
-app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", AuthenticationController.requireLogin, BuildController.showBuild)
 app.get("#{mountPoint}/repos/:owner/:repo/builds", AuthenticationController.requireLogin, BuildController.listBuilds)
+app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", AuthenticationController.requireLogin, BuildController.showBuild)
+app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/([^\/]+)\/builds\/([^\/]+)\/output\/(.*)$"), (req, res, next) ->
+		params = {
+			owner: req.params[0]
+			repo:  req.params[1]
+			sha:   req.params[2]
+			path:  req.params[3]
+		}
+		req.params = params
+		next()
+	, AuthenticationController.requireLogin, BuildController.downloadOutputFile
 
+console.log regex
 
 port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host
