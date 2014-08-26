@@ -10,7 +10,10 @@ describe "BuildManager", ->
 			"logger-sharelatex": @logger = { log: sinon.stub(), error: sinon.stub() }
 			"settings-sharelatex":
 				internal: github_latex_ci: { url: "http://example.com", mountPoint: @mountPoint = "/github" }
+				s3: { key: "", secret: "", github_latex_ci_bucket: "" }
 			"request": {}
+			"./mongojs": {}
+			"knox": @knox = createClient: () ->
 		@repo = "owner-id/repo-id"
 		@sha  = "mock-sha"
 		@ghclient = "mock-ghclient"
@@ -72,10 +75,12 @@ describe "BuildManager", ->
 				
 	describe "saveBuild", ->
 		beforeEach ->
-			@BuildManager._saveBuildInDatabase = sinon.stub().callsArg(3)
+			@BuildManager._saveBuildInDatabase = sinon.stub().callsArg(4)
 			@BuildManager._saveOutputFileToS3 = sinon.stub().callsArg(3)
 			
-			@BuildManager.saveBuild @repo, @sha, @status = "success", @outputFiles = [{
+			@BuildManager.saveBuild @repo, @sha, @commit = {
+				message: "message", author: "author"
+			}, @status = "success", @outputFiles = [{
 				"url": "http://localhost:3013/project/project-id/output/output.log",
 				"type": "log"
 			}, {
@@ -85,7 +90,7 @@ describe "BuildManager", ->
 			
 		it "should save the build in the database", ->
 			@BuildManager._saveBuildInDatabase
-				.calledWith(@repo, @sha, @status)
+				.calledWith(@repo, @sha, @commit, @status)
 				.should.equal true
 				
 		it "should save each output file to S3", ->

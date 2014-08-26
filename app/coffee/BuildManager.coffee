@@ -15,9 +15,15 @@ s3client = knox.createClient {
 
 module.exports = BuildManager =
 	buildAndSaveRepo: (ghclient, repo, sha, callback = (error) ->) ->
-		BuildManager.buildRepo ghclient, repo, sha, (error, status, outputFiles) ->
+		BuildManager._getCommit ghclient, repo, sha, (error, commit) ->
 			return callback(error) if error?
-			BuildManager.saveBuild repo, sha, status, outputFiles, callback
+			commit =
+				message: commit.commit.message
+				author:  commit.commit.author
+			logger.log commit: commit, repo: repo, sha: sha, "building repo"
+			BuildManager.buildRepo ghclient, repo, sha, (error, status, outputFiles) ->
+				return callback(error) if error?
+				BuildManager.saveBuild repo, sha, commit, status, outputFiles, callback
 
 	buildRepo: (ghclient, repo, sha, callback = (error, status, outputFiles) ->) ->
 		BuildManager._getTree ghclient, repo, sha, (error, tree) ->
@@ -30,8 +36,8 @@ module.exports = BuildManager =
 					logger.log response: response, "got CLSI response"
 					callback(null, response?.compile?.status, response?.compile?.outputFiles)
 	
-	saveBuild: (repo, sha, status, outputFiles, callback = (error) ->) ->
-		BuildManager._saveBuildInDatabase repo, sha, status, (error) ->
+	saveBuild: (repo, sha, commit, status, outputFiles, callback = (error) ->) ->
+		BuildManager._saveBuildInDatabase repo, sha, commit, status, (error) ->
 			return callback(error) if error?
 			
 			jobs = []
@@ -44,6 +50,9 @@ module.exports = BuildManager =
 	
 	_getTree: (ghclient, repo, sha, callback = (error, tree) ->) ->
 		ghclient.repo(repo).tree(sha, true, callback)
+		
+	_getCommit: (ghclient, repo, sha, callback = (error, commit) ->) ->
+		ghclient.repo(repo).commit(sha, callback)
 		
 	_createClsiRequest: (tree, callback = (error, clsiRequest) ->) ->
 		resources = []
@@ -72,13 +81,16 @@ module.exports = BuildManager =
 			return callback(error) if error?
 			callback null, body
 			
-	_saveBuildInDatabase: (repo, sha, status, callback = (error) ->) ->
+	_saveBuildInDatabase: (repo, sha, commit, status, callback = (error) ->) ->
 		db.githubBuilds.update({
 			repo: repo
 			sha:  sha
 		}, {
 			$set:
 				status: status
+				commit:
+					message: commit.message
+					author: commit.author
 		}, {
 			upsert: true
 		}, callback)
