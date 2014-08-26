@@ -23,7 +23,7 @@ block content
 								.small by #{build.commit.author.name} on #{build.commit.author.date}
 							strong.col-xs-2.text-right
 								if build.status == "success"
-									.text-success Success!
+									a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}/output/output.pdf") Download PDF
 								else
-									.text-danger Failed :(
+									button.btn.btn-danger(disabled) Failed :(
 		

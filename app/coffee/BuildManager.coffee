@@ -51,6 +51,8 @@ module.exports = BuildManager =
 	getBuilds: (ghclient, repo, callback = (error, builds) ->) ->
 		db.githubBuilds.find({
 			repo: repo
+		}).sort({
+			"commit.author.date": -1
 		}, callback)
 		
 	getBuild: (ghclient, repo, sha, callback = (error, builds) ->) ->
