@@ -10,7 +10,9 @@ module.exports = RepositoryController =
 	list: (req, res, next) ->
 		RepositoryManager.getRepos req.ghclient, (error, repos) ->
 			return next(error) if error?
-			res.render "repos/list", repos: repos
+			RepositoryManager.injectWebHookStatus repos, (error, repos) ->
+				return next(error) if error?
+				res.render "repos/list", repos: repos
 				
 	proxyBlob: (req, res, next) ->
 		url = req.url

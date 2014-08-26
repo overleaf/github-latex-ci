@@ -10,6 +10,7 @@ describe "RespositoryController", ->
 			"logger-sharelatex": @logger = { log: sinon.stub(), error: sinon.stub() }
 			"settings-sharelatex":
 				internal: github_latex_ci: { publicUrl: "http://example.com", mountPoint: "/github" }
+			"./WebHookManager": @WebHookManager = {}
 		@callback = sinon.stub()
 		@ghclient = "ghclient-stub"
 	
@@ -53,3 +54,31 @@ describe "RespositoryController", ->
 			@callback
 				.calledWith(null, personalRepos.concat(org1Repos).concat(org2Repos))
 				.should.equal true
+				
+	describe "injectWebhookStatus", ->
+		it "should set webhook = true on repos with webhooks", (done) ->
+			repos = [{
+				full_name: "me/repo1"
+			}, {
+				full_name: "me/repo2"
+			}, {
+				full_name: "me/repo3"
+			}]
+			
+			@WebHookManager.getWebHooksForRepos = sinon.stub().callsArgWith(1, null, [{
+				repo: "me/repo1"
+			}, {
+				repo: "me/repo3"
+			}])
+			
+			@RepositoryManager.injectWebHookStatus repos, (error, repos) ->
+				repos.should.deep.equal [{
+					full_name: "me/repo1"
+					webhook: true
+				}, {
+					full_name: "me/repo2"
+				}, {
+					full_name: "me/repo3"
+					webhook: true
+				}]
+				done()

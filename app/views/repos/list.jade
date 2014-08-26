@@ -5,6 +5,11 @@ block content
 		each repo in repos
 			li
 				a(href=repo.html_url)= repo.full_name
-				form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook", method="POST")
-					button(type="submit") Create Hook
+				if repo.webhook
+					div
+						strong Linked! 
+						a(href="#{settings.mountPoint}/repos/#{repo.full_name}/builds") View builds
+				else
+					form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook", method="POST")
+						button(type="submit") Create Hook
 		

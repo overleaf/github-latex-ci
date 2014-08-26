@@ -11,3 +11,8 @@ module.exports = WebHookManager =
 		}, {
 			upsert: true
 		}, callback)
+		
+	getWebHooksForRepos: (repos, callback = (error, webhooks) ->) ->
+		db.githubWebHooks.find({
+			repo: { $in: repos }
+		}, callback)
