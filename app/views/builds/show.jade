@@ -28,11 +28,18 @@ block content
 			.alert.alert-danger
 				.row
 					.col-xs-12
-						| Something went wrong compiling your PDF, sorry :(
+						| Sorry, your code couldn't compile. Please check the logs below.
 		
-		hr
+		.page-header
+			h3 Logs
 		
-		h3 All Output Files
+		.well
+			iframe(width="100%", height="400px", style="border: none", src="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/output.log")
+			a(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/output.log") Download logs
+		
+		.page-header
+			h3 All Output Files
+			
 		ul
 			each file in outputFiles
 				li
