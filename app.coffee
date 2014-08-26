@@ -65,6 +65,10 @@ app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/
 	
 app.post("#{mountPoint}/repos/:owner/:repo/builds/latest", AuthenticationController.requireLogin, BuildController.buildLatestCommit)
 
+app.get "/badge.svg", (req, res, next) ->
+	res.header("Content-Type", "image/svg+xml")
+	res.render "badges/pdf.jade"
+
 port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host
 app.listen port, host, (error) ->
