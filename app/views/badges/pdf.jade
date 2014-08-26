@@ -1,4 +1,25 @@
-svg(width="120" height="28" xmlns="http://www.w3.org/2000/svg")
+- if (typeof(build) == "undefined")
+	- var text = "Unknown";
+	- var color1 = "#999999";
+	- var color2 = "#666666";
+	- var width = 92;
+- else if (build.status == "in_progress")
+	- var text = "Building";
+	- var color1 = "#999999";
+	- var color2 = "#666666";
+	- var width = 84;
+- else if (build.status == "success")
+	- var text = "Built";
+	- var color1 = "#90D143";
+	- var color2 = "#5D9E10";
+	- var width = 60;
+- else
+	- var text = "Failed";
+	- var color1 = "#D15443";
+	- var color2 = "#9E2110";
+	- var width = 72;
+
+svg(width="#{width + 56}" height="28" xmlns="http://www.w3.org/2000/svg")
 	style(type="text/css").
 		text{alignment-baseline:middle;font-family:Arial,sans-serif;font-size:16px}
 		
@@ -7,14 +28,14 @@ svg(width="120" height="28" xmlns="http://www.w3.org/2000/svg")
 			stop(offset="0%" style="stop-color:#6F6F6F;stop-opacity:1")
 			stop(offset="100%" style="stop-color:#3C3C3C;stop-opacity:1")
 		linearGradient(id="grad2" x1="0%" y1="0%" x2="0%" y2="100%")
-			stop(offset="0%" style="stop-color:#90D143;stop-opacity:1")
-			stop(offset="100%" style="stop-color:#5D9E10;stop-opacity:1")
+			stop(offset="0%" style="stop-color:#{color1};stop-opacity:1")
+			stop(offset="100%" style="stop-color:#{color2};stop-opacity:1")
 	
 	rect(x="0" y="0" rx="5" ry="5" width="56" height="28" fill="url(#grad1)")
-	rect(x="10" y="0" width="50" height="28" fill="url(#grad1)")
-	rect(x="56" y="0" rx="5" ry="5" width="60" height="28" fill="url(#grad2)")
-	rect(x="56" y="0" width="50" height="28" fill="url(#grad2)")
+	rect(x="10" y="0" width="46" height="28" fill="url(#grad1)")
+	rect(x="56" y="0" rx="5" ry="5" width="#{width}" height="28" fill="url(#grad2)")
+	rect(x="56" y="0" width="#{width - 10}" height="28" fill="url(#grad2)")
 	text(x="12" y="16" style="fill:#000;opacity:0.75;") PDF
 	text(x="12" y="15" style="fill:#fff;") PDF
-	text(x="68" y="16" style="fill:#000;opacity:0.75;") Built
-	text(x="68" y="15" style="fill:#fff;") Built
+	text(x="68" y="16" style="fill:#000;opacity:0.75;") #{text}
+	text(x="68" y="15" style="fill:#fff;") #{text}

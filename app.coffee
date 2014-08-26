@@ -2,7 +2,7 @@ logger = require "logger-sharelatex"
 logger.initialize("github-latex-ci")
 
 settings = require "settings-sharelatex"
-mountPoint = settings.internal.github_latex_ci.mountPoint
+{mountPoint, publicUrl} = settings.internal.github_latex_ci
 
 express = require "express"
 app = express()
@@ -23,6 +23,7 @@ app.set('views', './app/views')
 app.set('view engine', 'jade')
 
 app.set("mountPoint", mountPoint)
+app.set("publicUrl", publicUrl)
 
 # Cookies and sessions.
 yearInMilliseconds = 365 * 24 * 60 * 60 * 1000
@@ -52,6 +53,7 @@ app.post("#{mountPoint}/repos/:owner/:repo/hook/destroy", AuthenticationControll
 
 app.get("#{mountPoint}/repos/:owner/:repo/builds", AuthenticationController.requireLogin, BuildController.listBuilds)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", AuthenticationController.requireLogin, BuildController.showBuild)
+app.get("#{mountPoint}/repos/:owner/:repo/builds/latest/badge.svg", BuildController.latestPdfBadge)
 app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/([^\/]+)\/builds\/([^\/]+)\/output\/(.*)$"), (req, res, next) ->
 		params = {
 			owner: req.params[0]
@@ -64,10 +66,6 @@ app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/
 	, AuthenticationController.requireLogin, BuildController.downloadOutputFile
 	
 app.post("#{mountPoint}/repos/:owner/:repo/builds/latest", AuthenticationController.requireLogin, BuildController.buildLatestCommit)
-
-app.get "/badge.svg", (req, res, next) ->
-	res.header("Content-Type", "image/svg+xml")
-	res.render "badges/pdf.jade"
 
 port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host

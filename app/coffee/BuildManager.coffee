@@ -48,20 +48,28 @@ module.exports = BuildManager =
 						
 			async.parallelLimit jobs, 5, callback
 			
-	getBuilds: (ghclient, repo, callback = (error, builds) ->) ->
+	getBuilds: (repo, callback = (error, builds) ->) ->
 		db.githubBuilds.find({
 			repo: repo
 		}).sort({
 			"commit.author.date": -1
 		}, callback)
 		
-	getBuild: (ghclient, repo, sha, callback = (error, builds) ->) ->
+	getBuild: (repo, sha, callback = (error, builds) ->) ->
 		db.githubBuilds.find {
 			repo: repo
 			sha: sha
 		}, (error, builds = []) ->
 			return callback(error) if error?
 			callback null, builds[0]
+	
+	getLatestBuild: (repo, callback = (error, build) ->) ->
+		db.githubBuilds.find({
+			repo: repo
+		}).sort({
+			"commit.author.date": -1
+		}).limit 1, (error, builds) ->
+			callback error, builds[0]
 			
 	markBuildAsInProgress: (repo, sha, callback = (error) ->) ->
 		BuildManager._saveBuildInDatabase repo, sha, null, "in_progress", callback

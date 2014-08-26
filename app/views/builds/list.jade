@@ -6,24 +6,39 @@ block content
 			a(href="#{settings.mountPoint}/repos/#{repo}/builds") #{repo}
 			
 	p
-		form(action="#{settings.mountPoint}/repos/#{repo}/builds/latest", method="POST")
-			input.btn.btn-primary(type="submit", value="Build Now")
-		
-	table.table.table-hover
-		thead
-			tr
-				th Builds
-		tbody
-			each build in builds
+		.row
+			.col-xs-6
+				form(action="#{settings.mountPoint}/repos/#{repo}/builds/latest", method="POST")
+					input.btn.btn-primary(type="submit", value="Build Now")
+			.col-xs-6.text-right
+				a(href, data-toggle="modal", data-target="#badge-modal")
+					img(src="#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg")
+				
+			div.modal.fade#badge-modal(tabindex="-1" role="dialog" aria-labelledby="badgeModal" aria-hidden="true")
+				.modal-dialog
+					.modal-content
+						.modal-body
+							h3 Image URL
+							pre #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg
+							h3 Markdown
+							pre [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds)
+	
+	p
+		table.table.table-hover
+			thead
 				tr
-					td
-						.row
-							.col-xs-10
-								a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
-								.small by #{build.commit.author.name} on #{build.commit.author.date}
-							strong.col-xs-2.text-right
-								if build.status == "success"
-									a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}/output/output.pdf") Download PDF
-								else
-									button.btn.btn-danger(disabled) Failed :(
+					th Builds
+			tbody
+				each build in builds
+					tr
+						td
+							.row
+								.col-xs-10
+									a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
+									.small by #{build.commit.author.name} on #{build.commit.author.date}
+								strong.col-xs-2.text-right
+									if build.status == "success"
+										a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}/output/output.pdf") Download PDF
+									else
+										button.btn.btn-danger(disabled) Failed :(
 		
