@@ -25,10 +25,19 @@ module.exports =
 				return next(error) if error?
 				req.session.token = token
 				res.redirect "#{mountPoint}/repos"
+			
+	setupLoginStatus: (req, res, next = (error) ->) ->
+		if req.session?.token?
+			res.locals.loggedIn = req.loggedIn = true
+			req.ghclient = github.client(req.session.token)
+			next()
+		else
+			res.locals.loggedIn = req.loggedIn = false
+			req.ghclient = github.client()
+			next()
 				
 	requireLogin: (req, res, next = (error) ->) ->
-		if req.session?.token?
-			req.ghclient = github.client(req.session.token)
+		if req.loggedIn
 			next()
 		else
 			res.redirect("#{mountPoint}/login")

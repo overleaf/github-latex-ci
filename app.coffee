@@ -43,6 +43,8 @@ app.use(session(
 	proxy: settings.behindProxy
 ))
 
+app.use(AuthenticationController.setupLoginStatus)
+
 app.get("#{mountPoint}/", IndexController.index)
 
 app.get("#{mountPoint}/login", AuthenticationController.login)
@@ -54,8 +56,8 @@ app.get("#{mountPoint}/repos/:owner/:repo/git/blobs/:sha", RepositoryController.
 app.post("#{mountPoint}/repos/:owner/:repo/hook", AuthenticationController.requireLogin, WebHookController.createHook)
 app.post("#{mountPoint}/repos/:owner/:repo/hook/destroy", AuthenticationController.requireLogin, WebHookController.destroyHook)
 
-app.get("#{mountPoint}/repos/:owner/:repo/builds", AuthenticationController.requireLogin, BuildController.listBuilds)
-app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", AuthenticationController.requireLogin, BuildController.showBuild)
+app.get("#{mountPoint}/repos/:owner/:repo/builds", BuildController.listBuilds)
+app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", BuildController.showBuild)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/latest/badge.svg", BuildController.latestPdfBadge)
 app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/([^\/]+)\/builds\/([^\/]+)\/output\/(.*)$"), (req, res, next) ->
 		params = {
@@ -66,7 +68,7 @@ app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/
 		}
 		req.params = params
 		next()
-	, AuthenticationController.requireLogin, BuildController.downloadOutputFile
+	, BuildController.downloadOutputFile
 	
 app.post("#{mountPoint}/repos/:owner/:repo/builds/latest", AuthenticationController.requireLogin, BuildController.buildLatestCommit)
 

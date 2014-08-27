@@ -48,7 +48,7 @@ module.exports = RepositoryManager =
 		ghclient.me().orgs callback
 		
 	_getOrgRepos: (ghclient, org, callback = (error, repos) ->) ->
-		ghclient.org(org).repos callback
+		ghclient.org(org).repos type: "public", callback
 		
 	_getPersonalRepos: (ghclient, callback = (error, repos) ->) ->
-		ghclient.me().repos callback
+		ghclient.me().repos type: "public", callback

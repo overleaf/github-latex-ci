@@ -22,9 +22,10 @@ block content
 			a(href="#latestBuild", role="tab", data-toggle="tab") Latest
 		li
 			a(href="#previousBuilds", role="tab", data-toggle="tab") Previous Versions
-		li.pull-right
-			form(action="#{settings.mountPoint}/repos/#{repo}/builds/latest", method="POST")
-				input.btn.btn-primary(type="submit", value="Build Now")
+		if loggedIn
+			li.pull-right
+				form(action="#{settings.mountPoint}/repos/#{repo}/builds/latest", method="POST")
+					input.btn.btn-primary(type="submit", value="Build Now")
 	
 	.tab-content
 		.tab-pane.active#latestBuild
