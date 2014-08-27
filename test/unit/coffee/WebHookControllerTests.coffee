@@ -10,6 +10,7 @@ describe "WebHookController", ->
 			"logger-sharelatex": @logger = { log: sinon.stub(), error: sinon.stub() }
 			"./WebHookManager": @WebHookManager = {}
 			"./RepositoryManager": @RepositoryManager = {}
+			"./BuildManager": @BuildManager = {}
 			"settings-sharelatex":
 				internal: github_latex_ci: { publicUrl: "http://example.com", mountPoint: @mountPoint = "/github" }
 	
