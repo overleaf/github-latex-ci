@@ -10,17 +10,14 @@ describe "WebHookController", ->
 			"logger-sharelatex": @logger = { log: sinon.stub(), error: sinon.stub() }
 			"./WebHookManager": @WebHookManager = {}
 			"./RepositoryManager": @RepositoryManager = {}
-			"crypto": @crypto = {}
 			"settings-sharelatex":
 				internal: github_latex_ci: { publicUrl: "http://example.com", mountPoint: @mountPoint = "/github" }
 	
 	describe "createHook", ->
 		beforeEach ->
 			@hook_id = "hook-id"
-			@WebHookManager.createWebHook = sinon.stub().callsArgWith(3, null, { id: @hook_id })
-			@RepositoryManager.saveWebHook = sinon.stub().callsArg(3)
-			@secret = "deadbeef"
-			@crypto.randomBytes = sinon.stub().returns(new Buffer(@secret, "hex"))
+			@WebHookManager.createWebHook = sinon.stub().callsArgWith(2, null, { id: @hook_id })
+			@RepositoryManager.saveWebHook = sinon.stub().callsArg(2)
 			@repo = "owner/repo"
 			@req =
 				ghclient: "mock-ghclient"
@@ -34,12 +31,12 @@ describe "WebHookController", ->
 		
 		it "should send a request to Github to create the webhook", ->
 			@WebHookManager.createWebHook
-				.calledWith(@req.ghclient, @repo, @secret)
+				.calledWith(@req.ghclient, @repo)
 				.should.equal true
 		
 		it "should store the webhook in the database", ->
 			@RepositoryManager.saveWebHook
-				.calledWith(@repo, @hook_id, @secret)
+				.calledWith(@repo, @hook_id)
 				.should.equal true
 		
 		it "should redirect to the repo list page", ->

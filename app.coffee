@@ -55,6 +55,7 @@ app.get("#{mountPoint}/repos/:owner/:repo/git/blobs/:sha", RepositoryController.
 
 app.post("#{mountPoint}/repos/:owner/:repo/hook", AuthenticationController.requireLogin, WebHookController.createHook)
 app.post("#{mountPoint}/repos/:owner/:repo/hook/destroy", AuthenticationController.requireLogin, WebHookController.destroyHook)
+app.post("#{mountPoint}/events", WebHookController.webHookEvent)
 
 app.get("#{mountPoint}/repos/:owner/:repo/builds", BuildController.listBuilds)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", BuildController.showBuild)

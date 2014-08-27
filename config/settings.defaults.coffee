@@ -26,8 +26,9 @@ module.exports =
 			url: "http://localhost:3013"
 			
 	github:
-		client_id:     process.env.GITHUB_CLIENT_ID
-		client_secret: process.env.GITHUB_CLIENT_SECRET
+		client_id:      process.env.GITHUB_CLIENT_ID
+		client_secret:  process.env.GITHUB_CLIENT_SECRET
+		webhook_secret: process.env.GITHUB_WEBHOOK_SECRET || "webhook_secret"
 		
 	redis:
 		web:

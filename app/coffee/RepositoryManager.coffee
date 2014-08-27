@@ -54,13 +54,12 @@ module.exports = RepositoryManager =
 	_getPersonalRepos: (ghclient, callback = (error, repos) ->) ->
 		ghclient.me().repos type: "public", callback
 		
-	saveWebHook: (repo, id, secret, callback = (error) ->) ->
+	saveWebHook: (repo, id, callback = (error) ->) ->
 		db.githubRepos.update({
 			repo: repo
 		}, {
 			$set:
-				hook_id: id,
-				secret: secret
+				hook_id: id
 		}, {
 			upsert: true
 		}, callback)
