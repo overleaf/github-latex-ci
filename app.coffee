@@ -77,6 +77,9 @@ app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/
 	
 app.post("#{mountPoint}/repos/:owner/:repo/builds/latest", AuthenticationController.requireLogin, BuildController.buildLatestCommit)
 
+app.get "#{mountPoint}/status", (req, res, next) ->
+	res.send("github-latex-ci is alive")
+
 port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host
 app.listen port, host, (error) ->
