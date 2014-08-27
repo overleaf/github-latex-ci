@@ -14,6 +14,7 @@ redis = require('redis')
 rclient = redis.createClient(settings.redis.web.port, settings.redis.web.host)
 rclient.auth(settings.redis.web.password)
 
+IndexController = require "./app/js/IndexController"
 AuthenticationController = require "./app/js/AuthenticationController"
 RepositoryController = require "./app/js/RepositoryController"
 WebHookController = require "./app/js/WebHookController"
@@ -41,6 +42,8 @@ app.use(session(
 		secure: settings.secureCookie
 	proxy: settings.behindProxy
 ))
+
+app.get("#{mountPoint}/", IndexController.index)
 
 app.get("#{mountPoint}/login", AuthenticationController.login)
 app.get("#{mountPoint}/auth",  AuthenticationController.auth)

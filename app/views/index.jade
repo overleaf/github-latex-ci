@@ -1,0 +1,31 @@
+extends ./layout
+
+block content
+
+	p
+
+	.row
+		.col-md-10.col-md-offset-1
+			.jumbotron.text-center
+				h1 GitHub LaTeX compiler
+				p
+					| Connect your public LaTeX GitHub repositories and
+					br
+					| we'll automatically compile
+					| your code to a PDF on each change.
+					
+				p
+					a.btn.btn-lg.btn-primary(href="#{settings.mountPoint}/login") Log in with GitHub
+		
+	.row
+		.col-md-6.col-md-offset-3
+			h2 How does this work?
+			
+			p
+				| We run a LaTeX compiler in the cloud which listens for changes to your Github repository.
+				| When you make a change, we compile the latest content and host the PDF and log files for
+				| you to view at your leisure.
+				
+			p
+				| You can embed a badge into your project's README or website so that you can see the latest
+				| compile status and access the PDF with a single click.

@@ -2,13 +2,15 @@ extends ../layout
 
 block content
 	.page-header
-		h1 Your Github Repositories
+		h1 Your GitHub Repositories
+		
+	p After you turn on a repository, we will automatically compile your LaTeX code to a PDF everytime you make a change.
 
 	- if (active_repos.length > 0)
 		table.table.table-hover.table-striped
 			thead
 				tr
-					th Active Repos
+					th Enabled Repos
 			tbody
 				each repo in active_repos
 					tr
@@ -18,7 +20,7 @@ block content
 									a(href=repo.html_url)= repo.full_name
 								.col-xs-4.text-right
 									form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook/destroy", method="POST")
-										a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo.full_name}/builds") View Latest PDF
+										a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo.full_name}/builds") View Latest Build
 										| 
 										button.btn.btn-danger(type="submit") Turn Off								
 		

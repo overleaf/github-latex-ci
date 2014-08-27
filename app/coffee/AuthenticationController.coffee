@@ -24,7 +24,7 @@ module.exports =
 			github.auth.login code, (error, token) ->
 				return next(error) if error?
 				req.session.token = token
-				res.send("Logged in!")
+				res.redirect "#{mountPoint}/repos"
 				
 	requireLogin: (req, res, next = (error) ->) ->
 		if req.session?.token?
