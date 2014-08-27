@@ -59,7 +59,11 @@ app.post("#{mountPoint}/repos/:owner/:repo/hook/destroy", AuthenticationControll
 app.get("#{mountPoint}/repos/:owner/:repo/builds", BuildController.listBuilds)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", BuildController.showBuild)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/latest/badge.svg", BuildController.latestPdfBadge)
-app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/([^\/]+)\/builds\/([^\/]+)\/output\/(.*)$"), (req, res, next) ->
+
+# Note that ../output.pdf is a clever link which will redirect to the build page if there is no PDF,
+# while ../raw/output.pdf will fail if the PDF is not there.
+app.get("#{mountPoint}/repos/:owner/:repo/builds/latest/output.pdf", BuildController.downloadLatestBuild)
+app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/([^\/]+)\/builds\/([^\/]+)\/raw\/(.*)$"), (req, res, next) ->
 		params = {
 			owner: req.params[0]
 			repo:  req.params[1]

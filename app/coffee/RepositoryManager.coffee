@@ -2,9 +2,10 @@ logger = require "logger-sharelatex"
 settings = require "settings-sharelatex"
 async  = require "async"
 WebHookManager = require "./WebHookManager"
+{db, ObjectId} = require "./mongojs"
 
 module.exports = RepositoryManager =
-	getRepos: (ghclient, callback = (error, repos) ->) ->
+	gitReposOnGithub: (ghclient, callback = (error, repos) ->) ->
 		jobs = []
 		repos = []
 		
@@ -29,7 +30,7 @@ module.exports = RepositoryManager =
 				callback null, repos
 				
 	injectWebHookStatus: (repos, callback = (error, repos) ->) ->
-		WebHookManager.getWebHooksForRepos repos.map((r) -> r.full_name), (error, webhooks) ->
+		RepositoryManager.getRepos repos.map((r) -> r.full_name), (error, webhooks) ->
 			return callback(error) if error?
 			webhooksDict = {}
 			for webhook in webhooks
@@ -39,7 +40,7 @@ module.exports = RepositoryManager =
 					repo.webhook = true
 			callback null, repos
 	
-	getLatestCommit: (ghclient, repo, callback = (error, sha) ->) ->
+	getLatestCommitOnGitHub: (ghclient, repo, callback = (error, sha) ->) ->
 		ghclient.repo(repo).branch "master", (error, branch) ->
 			return callback(error) if error?
 			callback null, branch?.commit?.sha
@@ -52,3 +53,43 @@ module.exports = RepositoryManager =
 		
 	_getPersonalRepos: (ghclient, callback = (error, repos) ->) ->
 		ghclient.me().repos type: "public", callback
+		
+	saveWebHook: (repo, id, secret, callback = (error) ->) ->
+		db.githubRepos.update({
+			repo: repo
+		}, {
+			$set:
+				hook_id: id,
+				secret: secret
+		}, {
+			upsert: true
+		}, callback)
+		
+	deleteRepo: (repo, callback = (error) ->) ->
+		db.githubRepos.remove({
+			repo: repo
+		}, callback)
+		
+	getRepo: (repo_name, callback = (error, repo) ->) ->
+		db.githubRepos.find {
+			repo: repo_name
+		}, (error, repos = []) ->
+			callback error, repos[0]
+		
+	getRepos: (repo_names, callback = (error, repos) ->) ->
+		db.githubRepos.find({
+			repo: { $in: repo_names }
+		}, callback)
+		
+	setLatestCommit: (repo, sha, callback = (error) ->) ->
+		db.githubRepos.update({
+			repo: repo
+		}, {
+			$set: { latest_commit: sha }
+		}, callback)
+		
+	getLatestCommit: (repo, callback = (error, sha) ->) ->
+		db.githubRepos.find {
+			repo: repo
+		}, (error, repos = []) ->
+			callback error, repos[0]?.latest_commit

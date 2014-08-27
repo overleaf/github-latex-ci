@@ -10,11 +10,12 @@ describe "RespositoryController", ->
 			"logger-sharelatex": @logger = { log: sinon.stub(), error: sinon.stub() }
 			"settings-sharelatex":
 				internal: github_latex_ci: { publicUrl: "http://example.com", mountPoint: "/github" }
+			"./mongojs": {}
 			"./WebHookManager": @WebHookManager = {}
 		@callback = sinon.stub()
 		@ghclient = "ghclient-stub"
 	
-	describe "getRepos", ->
+	describe "gitReposOnGithub", ->
 		it "should return all personal and organisation repos", ->
 			personalRepos = [{
 				full_name: "me/repo1"
@@ -49,7 +50,7 @@ describe "RespositoryController", ->
 			@res =
 				render: sinon.stub()
 				
-			@RepositoryManager.getRepos @ghclient, @callback
+			@RepositoryManager.gitReposOnGithub @ghclient, @callback
 			
 			@callback
 				.calledWith(null, personalRepos.concat(org1Repos).concat(org2Repos))
@@ -65,7 +66,7 @@ describe "RespositoryController", ->
 				full_name: "me/repo3"
 			}]
 			
-			@WebHookManager.getWebHooksForRepos = sinon.stub().callsArgWith(1, null, [{
+			@RepositoryManager.getRepos = sinon.stub().callsArgWith(1, null, [{
 				repo: "me/repo1"
 			}, {
 				repo: "me/repo3"

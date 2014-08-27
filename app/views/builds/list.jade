@@ -15,7 +15,7 @@ block content
 					h3 Image URL
 					pre #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg
 					h3 Markdown
-					pre [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds)
+					pre [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/output.pdf)
 
 	ul.nav.nav-tabs(role="tablist")
 		li.active
@@ -30,7 +30,11 @@ block content
 	.tab-content
 		.tab-pane.active#latestBuild
 			- var build = latestBuild
-			include ./_build
+			if (build)
+				include ./_build
+			else
+				p
+				p.small No builds yet
 		.tab-pane#previousBuilds
 			table.table.table-hover.table-striped
 				tbody

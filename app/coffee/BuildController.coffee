@@ -7,24 +7,24 @@ module.exports = BuildController =
 	buildLatestCommit: (req, res, next) ->
 		{owner, repo} = req.params
 		repo = "#{owner}/#{repo}"
-		RepositoryManager.getLatestCommit req.ghclient, repo, (error, sha) ->
+		RepositoryManager.getLatestCommitOnGitHub req.ghclient, repo, (error, sha) ->
 			return next(error) if error?
-			req.params.sha = sha
-			BuildController.buildCommit(req, res, next)
+			RepositoryManager.setLatestCommit repo, sha, (error) ->
+				return next(error) if error?
+				req.params.sha = sha
+				BuildController.buildCommit(req, res, next)
 
 	buildCommit: (req, res, next) ->
 		{sha, owner, repo} = req.params
 		repo = "#{owner}/#{repo}"
-		BuildManager.markBuildAsInProgress repo, sha, (error) ->
+		BuildManager.startBuildingCommitInBackground req.ghclient, repo, sha, (error) ->
 			return next(error) if error?
-			# Build in the background
-			BuildManager.buildCommit req.ghclient, repo, sha
 			res.redirect "#{mountPoint}/repos/#{repo}/builds"
 			
 	listBuilds: (req, res, next) ->
 		{owner, repo} = req.params
 		repo = "#{owner}/#{repo}"
-		RepositoryManager.getLatestCommit req.ghclient, repo, (error, sha) ->
+		RepositoryManager.getLatestCommit repo, (error, sha) ->
 			return next(error) if error?
 			BuildManager.getBuild repo, sha, (error, latestBuild) ->
 				return next(error) if error?
@@ -58,11 +58,26 @@ module.exports = BuildController =
 			res.header("Content-Length", s3res.headers['content-length'])
 			s3res.pipe(res)
 			
+	downloadLatestBuild: (req, res, next) ->
+		{owner, repo} = req.params
+		repo = "#{owner}/#{repo}"
+		RepositoryManager.getLatestCommit repo, (error, sha) ->
+			return next(error) if error?
+			BuildManager.getBuild repo, sha, (error, build) ->
+				return next(error) if error?
+				if build? and build.status != "success"
+					res.redirect "#{mountPoint}/repos/#{repo}/builds"
+				else
+					res.redirect "#{mountPoint}/repos/#{repo}/builds/#{sha}/raw/output.pdf"
+					
+			
 	latestPdfBadge: (req, res, next) ->	
 		{owner, repo} = req.params
 		repo = "#{owner}/#{repo}"
-		BuildManager.getLatestBuild repo, (error, build) ->
+		RepositoryManager.getLatestCommit repo, (error, sha) ->
 			return next(error) if error?
-			res.header("Content-Type", "image/svg+xml")
-			res.render "badges/pdf.jade",
-				build: build
+			BuildManager.getBuild repo, sha, (error, build) ->
+				return next(error) if error?
+				res.header("Content-Type", "image/svg+xml")
+				res.render "badges/pdf.jade",
+					build: build

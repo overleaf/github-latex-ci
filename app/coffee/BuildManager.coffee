@@ -14,6 +14,14 @@ s3client = knox.createClient {
 }
 
 module.exports = BuildManager =
+	startBuildingCommitInBackground: (ghclient, repo, sha, callback = (error) ->) ->
+		BuildManager.markBuildAsInProgress repo, sha, (error) ->
+			return callback(error) if error?
+			# Build in the background
+			BuildManager.buildCommit ghclient, repo, sha, (error) ->
+				logger.error err:error, repo: repo, sha: sha, "background build failed"
+			callback()
+
 	buildCommit: (ghclient, repo, sha, callback = (error) ->) ->
 		BuildManager._getCommit ghclient, repo, sha, (error, commit) ->
 			return callback(error) if error?

@@ -8,7 +8,7 @@ RepositoryManager = require "./RepositoryManager"
 
 module.exports = RepositoryController =
 	list: (req, res, next) ->
-		RepositoryManager.getRepos req.ghclient, (error, repos) ->
+		RepositoryManager.gitReposOnGithub req.ghclient, (error, repos) ->
 			return next(error) if error?
 			RepositoryManager.injectWebHookStatus repos, (error, repos) ->
 				return next(error) if error?

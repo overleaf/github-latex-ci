@@ -9,6 +9,7 @@ describe "WebHookController", ->
 		@WebHookController = sandboxedModule.require modulePath, requires:
 			"logger-sharelatex": @logger = { log: sinon.stub(), error: sinon.stub() }
 			"./WebHookManager": @WebHookManager = {}
+			"./RepositoryManager": @RepositoryManager = {}
 			"crypto": @crypto = {}
 			"settings-sharelatex":
 				internal: github_latex_ci: { publicUrl: "http://example.com", mountPoint: @mountPoint = "/github" }
@@ -17,7 +18,7 @@ describe "WebHookController", ->
 		beforeEach ->
 			@hook_id = "hook-id"
 			@WebHookManager.createWebHook = sinon.stub().callsArgWith(3, null, { id: @hook_id })
-			@WebHookManager.saveWebHookToDatabase = sinon.stub().callsArg(3)
+			@RepositoryManager.saveWebHook = sinon.stub().callsArg(3)
 			@secret = "deadbeef"
 			@crypto.randomBytes = sinon.stub().returns(new Buffer(@secret, "hex"))
 			@repo = "owner/repo"
@@ -37,7 +38,7 @@ describe "WebHookController", ->
 				.should.equal true
 		
 		it "should store the webhook in the database", ->
-			@WebHookManager.saveWebHookToDatabase
+			@RepositoryManager.saveWebHook
 				.calledWith(@repo, @hook_id, @secret)
 				.should.equal true
 		

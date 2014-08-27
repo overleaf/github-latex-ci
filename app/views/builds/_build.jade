@@ -12,7 +12,7 @@ else
 			.alert.alert-success
 				.row
 					.col-xs-12
-						a.btn.btn-success(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/output.pdf") Download PDF
+						a.btn.btn-success(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/raw/output.pdf") Download PDF
 						| &nbsp;&nbsp;Build was successful!
 	else
 		p
@@ -33,8 +33,8 @@ else
 		h3 Logs
 	
 	.well
-		iframe(width="100%", height="400px", style="border: none", src="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/output.log")
-		a(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/output.log") Download logs
+		iframe(width="100%", height="400px", style="border: none", src="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/raw/output.log")
+		a(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/raw/output.log") Download logs
 	
 	.page-header
 		h3 All Output Files
@@ -42,4 +42,4 @@ else
 	ul
 		each file in outputFiles
 			li
-				a(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/output/#{file}")= file
+				a(href="#{settings.mountPoint}/repos/#{build.repo}/builds/#{build.sha}/raw/#{file}")= file
