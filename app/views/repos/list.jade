@@ -6,13 +6,13 @@ block content
 		
 	p After you turn on a repository, we will automatically compile your LaTeX code to a PDF everytime you make a change.
 
-	- if (active_repos.length > 0)
+	- if (activeRepos.length > 0)
 		table.table.table-hover.table-striped
 			thead
 				tr
 					th Enabled Repos
 			tbody
-				each repo in active_repos
+				each repo in activeRepos
 					tr
 						td
 							.row
@@ -30,7 +30,7 @@ block content
 			tr
 				th Your Repos
 		tbody
-			each repo in other_repos
+			each repo in otherRepos
 				tr
 					td
 						.row

@@ -14,8 +14,8 @@ module.exports = RepositoryController =
 			RepositoryManager.injectWebHookStatus repos, (error, repos) ->
 				return next(error) if error?
 				res.render "repos/list",
-					active_repos: repos.filter (r) -> r.webhook
-					other_repos: repos.filter (r) -> !r.webhook
+					activeRepos: repos.filter (r) -> r.webhook
+					otherRepos: repos.filter (r) -> !r.webhook
 					csrfToken: req.csrfToken()
 					
 	show: (req, res, next) ->
