@@ -3,12 +3,14 @@ settings = require "settings-sharelatex"
 logger = require "logger-sharelatex"
 mountPoint = settings.internal.github_latex_ci.mountPoint
 
+auth = github.auth.config({
+	id:     settings.github.client_id,
+	secret: settings.github.client_secret
+})
+
 module.exports =
 	login: (req, res, next = (error) ->) ->
-		auth_url = github.auth.config({
-			id:     settings.github.client_id,
-			secret: settings.github.client_secret
-		}).login(['user:email', 'read:org', 'repo:status', 'admin:repo_hook'])
+		auth_url = auth.login(['user:email', 'read:org', 'repo:status', 'admin:repo_hook'])
 		req.session ||= {}
 		req.session.state = auth_url.match(/&state=([0-9a-z]{32})/i)[1];
 		logger.log state: req.session.state, url: auth_url, "redirecting to github login page"
@@ -21,7 +23,7 @@ module.exports =
 		else
 			code = req.query.code
 			logger.log code: code, "getting access_token from github"
-			github.auth.login code, (error, token) ->
+			auth.login code, (error, token) ->
 				return next(error) if error?
 				req.session.token = token
 				res.redirect "#{mountPoint}/repos"
