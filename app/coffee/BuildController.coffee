@@ -19,7 +19,7 @@ module.exports = BuildController =
 		repo = "#{owner}/#{repo}"
 		BuildManager.startBuildingCommitInBackground req.ghclient, repo, sha, (error) ->
 			return next(error) if error?
-			res.redirect "#{mountPoint}/repos/#{repo}/builds"
+			res.redirect "#{mountPoint}/repos/#{repo}"
 			
 	showBuild: (req, res, next) ->
 		{sha, owner, repo} = req.params
@@ -49,7 +49,7 @@ module.exports = BuildController =
 			BuildManager.getBuild repo, sha, (error, build) ->
 				return next(error) if error?
 				if build? and build.status != "success"
-					res.redirect "#{mountPoint}/repos/#{repo}/builds"
+					res.redirect "#{mountPoint}/repos/#{repo}"
 				else
 					res.redirect "#{mountPoint}/repos/#{repo}/builds/#{sha}/raw/output.pdf"
 					

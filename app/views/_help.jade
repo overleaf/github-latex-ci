@@ -1,0 +1,29 @@
+.page-header
+	h2 Configuration options
+
+h3 Compiler
+
+p
+	| You can set the LaTeX engine/compiler by including the following line in your LaTeX file:
+	pre.alert.alert-info
+		| % In your .tex file
+		| % !TEX program = xelatex
+	| Valid values are <code>pdflatex</code>, <code>lualatex</code>, <code>xelatex</code>, and
+	| <code>latex</code>.
+	
+p
+	| You can also specify this option in a <code>.latex.yml</code> file in your project:
+	pre.alert.alert-info
+		| # In .latex.yml
+		| compiler: xelatex
+	
+
+h3 Root file
+
+p
+	| If your project contains multiple .tex files, we'll try to automatically detect which one to
+	| run LaTeX on. However, if we get it wrong, you can specify it manually in
+	| <code>.latex.yml</code>:
+	pre.alert.alert-info
+		| # In .latex.yml
+		| root_file: thesis.tex

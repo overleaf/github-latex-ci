@@ -1,8 +1,9 @@
 extends ../layout
 
 block content
-	.page-header
-		h1
-			a(href="#{settings.mountPoint}/repos/#{build.repo}/builds") #{repo}
-	
-	include ./_build	
+	.card
+		.page-header
+			h1
+				a(href="#{settings.mountPoint}/repos/#{build.repo}") #{repo}
+		
+		include ./_build	

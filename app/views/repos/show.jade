@@ -1,57 +1,69 @@
 extends ../layout
 
 block content
-	.page-header
-		.pull-right
-			a(href, data-toggle="modal", data-target="#badge-modal")
-				img(src="#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg")
-		h1
-			a(href="#{settings.mountPoint}/repos/#{repo}/builds") #{repo}
-				
-	div.modal.fade#badge-modal(tabindex="-1" role="dialog" aria-labelledby="badgeModal" aria-hidden="true")
-		.modal-dialog
-			.modal-content
-				.modal-body
-					h3 Image URL
-					pre #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg
-					h3 Markdown
-					pre [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/output.pdf)
+	.card
+		.page-header
+			.pull-right
+				a(href, data-toggle="modal", data-target="#badge-modal")
+					img(src="#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg")
+			h1
+				a(href="#{settings.mountPoint}/repos/#{repo}") #{repo}
+			a(href="#{settings.mountPoint}/repos") ≪ All your projects
+					
+		div.modal.fade#badge-modal(tabindex="-1" role="dialog" aria-labelledby="badgeModal" aria-hidden="true")
+			.modal-dialog
+				.modal-content
+					.modal-body
+						h3 Image URL
+						pre #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg
+						h3 Markdown
+						pre [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/output.pdf)
 
-	ul.nav.nav-tabs(role="tablist")
-		li.active
-			a(href="#latestBuild", role="tab", data-toggle="tab") Latest
-		li
-			a(href="#previousBuilds", role="tab", data-toggle="tab") Previous Versions
-		if loggedIn
-			li.pull-right
-				form(action="#{settings.mountPoint}/repos/#{repo}/builds/latest", method="POST")
-					input(type="hidden", name="_csrf", value=csrfToken)
-					input.btn.btn-primary(type="submit", value="Build Now")
-	
-	.tab-content
-		.tab-pane.active#latestBuild
-			- var build = latestBuild
-			if (build)
-				include ../builds/_build
-			else
-				p
-				p.small No builds yet
-		.tab-pane#previousBuilds
-			table.table.table-hover.table-striped
-				tbody
-					each build in builds
-						tr
-							td
-								.row
-									.col-xs-10
-										- if (build.commit)
-											a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
-											.small by #{build.commit.author.name} on #{build.commit.author.date}
-										- else
-											| Building...
-									strong.col-xs-2.text-right
-										if build.status == "success"
-											a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}/output/output.pdf") Download PDF
-										else
-											button.btn.btn-danger(disabled) Failed :(
+		div.modal.fade#help-modal(tabindex="-1" role="dialog" aria-labelledby="helpModal" aria-hidden="true")
+			.modal-dialog
+				.modal-content
+					.modal-body
+						include ../_help
+						
+		ul.nav.nav-tabs(role="tablist")
+			li.active
+				a(href="#latestBuild", role="tab", data-toggle="tab") Latest
+			li
+				a(href="#previousBuilds", role="tab", data-toggle="tab") Previous Builds
+			if loggedIn
+				li.pull-right
+					form(action="#{settings.mountPoint}/repos/#{repo}/builds/latest", method="POST")
+						a(href, data-toggle="modal", data-target="#help-modal") Settings
+						| &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+						input(type="hidden", name="_csrf", value=csrfToken)
+						input.btn.btn-info(type="submit", value="Build Now")
+		
+		.tab-content
+			.tab-pane.active#latestBuild
+				- var build = latestBuild
+				if (build)
+					include ../builds/_build
+				else
+					p
+					p.small No builds yet
+			.tab-pane#previousBuilds
+				table.table.table-hover.table-striped
+					tbody
+						each build in builds
+							tr
+								td
+									.row
+										.col-xs-10
+											- if (build.commit)
+												a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
+												.small by #{build.commit.author.name} on #{build.commit.author.date}
+											- else
+												| Pending...
+										strong.col-xs-2.text-right
+											if build.status == "success"
+												a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}/output/output.pdf") Download PDF
+											else if build.status == "in_progress"
+												a.btn.btn-info(disabled, href) Building...
+											else
+												a.btn.btn-danger(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}") Failed :(
 		

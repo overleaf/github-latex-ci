@@ -2,53 +2,35 @@ extends ./layout
 
 block content
 
-	p
-
 	.row
 		.col-md-10.col-md-offset-1
-			.jumbotron.text-center
-				h1 GitHub LaTeX compiler
+			.text-center.row-spaced
+				.page-header
+					h1 ShareLaTeX Cloud Compiler
 				p
 					| Connect your public LaTeX GitHub repositories and
-					br
 					| we'll automatically compile
-					| your code to a PDF on each change.
+					| your LaTeX code to a PDF on each change.
 					
 				p
-					a.btn.btn-lg.btn-primary(href="#{settings.mountPoint}/login") Log in with GitHub
+					a.btn.btn-lg.btn-info(href="#{settings.mountPoint}/login") Log in with GitHub
+					
+				.row-spaced
+					p &nbsp;
 		
-	.row
-		.col-md-6.col-md-offset-3
-			h2 How does this work?
-			
-			p
-				| We run a LaTeX compiler in the cloud which listens for changes to your Github repository.
-				| When you make a change, we compile the latest content and host the PDF and log files for
-				| you to view at your leisure.
+	.row.row-spaced
+		.col-md-10.col-md-offset-1
+			.card
+				.page-header
+					h2 How does this work?
 				
-			p
-				| You can embed a badge into your project's README or website so that you can see the latest
-				| compile status and access the PDF with a single click.
-				
-			h2 Configuration options
-			
-			h3 Compiler
-			
-			p
-				| You can set the LaTeX engine/compiler by including the following line in your LaTeX file:
-				pre % !TEX program = lualatex
-				| Valid values are <code>pdflatex</code>, <code>lualatex</code>, <code>xelatex</code>, and
-				| <code>latex</code>.
-				
-			p
-				| You can also specify this option in a <code>.latex.yml</code> file in your project:
-				pre compiler: xelatex
-				
-			
-			h3 Root file
-			
-			p
-				| If your project contains multiple .tex files, we'll try to automatically detect which one to
-				| run LaTeX on. However, if we get it wrong, you can specify it manually by including a 
-				| <code>.latex.yml</code> file in your project with the following contents:
-				pre root_file: thesis.tex
+				p
+					| We run a LaTeX compiler in the cloud which listens for changes to your Github repository.
+					| When you make a change, we compile the latest content and host the PDF and log files for
+					| you.
+					
+				p
+					| You can embed a badge into your project's README or website so that you can see the latest
+					| compile status and access the PDF with a single click.
+					
+				include ./_help

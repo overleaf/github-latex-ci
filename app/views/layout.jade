@@ -2,9 +2,19 @@ doctype html
 html
 	head
 		title Github LaTeX CI
-		link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css")
+		link(rel="stylesheet", href="https://www.sharelatex.com/stylesheets/style.css")
 		script(type="text/javascript", src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
 		script(type="text/javascript", src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
 	body
-		.container
-			block content
+		.navbar.navbar-default
+			.container-fluid
+				.navbar-header
+					a(href="https://www.sharelatex.com").navbar-brand
+				
+				ul.nav.navbar-nav.navbar-right
+					li.subdued
+						a(href="https://www.sharelatex.com") The ShareLaTeX Cloud Compiler is a service developed and provided by ShareLaTeX
+
+		.content.content-alt
+			.container
+				block content
