@@ -21,24 +21,6 @@ module.exports = BuildController =
 			return next(error) if error?
 			res.redirect "#{mountPoint}/repos/#{repo}/builds"
 			
-	listBuilds: (req, res, next) ->
-		{owner, repo} = req.params
-		repo = "#{owner}/#{repo}"
-		RepositoryManager.getLatestCommit repo, (error, sha) ->
-			return next(error) if error?
-			BuildManager.getBuild repo, sha, (error, latestBuild) ->
-				return next(error) if error?
-				BuildManager.getOutputFiles repo, sha, (error, outputFiles) ->
-					return next(error) if error?
-					BuildManager.getBuilds repo, (error, builds) ->
-						return next(error) if error?
-						res.render "builds/list",
-							repo: repo,
-							builds: builds
-							latestBuild: latestBuild
-							outputFiles: outputFiles
-							csrfToken: req.csrfToken()
-				
 	showBuild: (req, res, next) ->
 		{sha, owner, repo} = req.params
 		repo = "#{owner}/#{repo}"

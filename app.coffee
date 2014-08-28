@@ -56,13 +56,13 @@ app.get("#{mountPoint}/login", AuthenticationController.login)
 app.get("#{mountPoint}/auth",  AuthenticationController.auth)
 
 app.get("#{mountPoint}/repos", csrf, AuthenticationController.requireLogin, RepositoryController.list)
+app.get("#{mountPoint}/repos/:owner/:repo", csrf, RepositoryController.show)
 app.get("#{mountPoint}/repos/:owner/:repo/git/blobs/:sha", RepositoryController.proxyBlob)
 
 app.post("#{mountPoint}/repos/:owner/:repo/hook", bodyParser(), csrf, AuthenticationController.requireLogin, WebHookController.createHook)
 app.post("#{mountPoint}/repos/:owner/:repo/hook/destroy", bodyParser(), csrf, AuthenticationController.requireLogin, WebHookController.destroyHook)
 app.post("#{mountPoint}/events", WebHookController.webHookEvent)
 
-app.get("#{mountPoint}/repos/:owner/:repo/builds", csrf, BuildController.listBuilds)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", BuildController.showBuild)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/latest/badge.svg", BuildController.latestPdfBadge)
 

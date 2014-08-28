@@ -57,7 +57,14 @@ module.exports = BuildManager =
 						
 			async.parallelLimit jobs, 5, callback
 			
-	getBuilds: (repo, callback = (error, builds) ->) ->
+	getBuildAndOutputFiles: (repo, sha, callback = (error, build, outputFiles) ->) ->
+		BuildManager.getBuild repo, sha, (error, build) ->
+			return callback(error) if error?
+			return callback(null, null, null) if !build?
+			BuildManager.getOutputFiles repo, sha, (error, outputFiles) ->
+				callback error, build, outputFiles
+			
+	getAllBuilds: (repo, callback = (error, builds) ->) ->
 		db.githubBuilds.find({
 			repo: repo
 		}).sort({
@@ -71,17 +78,23 @@ module.exports = BuildManager =
 		}, (error, builds = []) ->
 			return callback(error) if error?
 			callback null, builds[0]
-	
-	getLatestBuild: (repo, callback = (error, build) ->) ->
-		db.githubBuilds.find({
-			repo: repo
-		}).sort({
-			"commit.author.date": -1
-		}).limit 1, (error, builds) ->
-			callback error, builds[0]
 			
 	markBuildAsInProgress: (repo, sha, callback = (error) ->) ->
 		BuildManager._saveBuildInDatabase repo, sha, null, "in_progress", callback
+	
+	getOutputFiles: (repo, sha, callback = (error, files) ->) ->
+		prefix = "#{repo}/#{sha}"
+		logger.log prefix: prefix, "listing output files"
+		s3client.list { prefix: prefix }, (error, data) ->
+			return callback(error) if error?
+			files = []
+			for file in data.Contents
+				files.push file.Key.slice(prefix.length + 1)
+			callback null, files
+			
+	getOutputFileStream: (repo, sha, name, callback = (error, res) ->) ->
+		path = "#{repo}/#{sha}/#{name}"
+		s3client.getFile path, callback
 	
 	_getTree: (ghclient, repo, sha, callback = (error, tree) ->) ->
 		ghclient.repo(repo).tree(sha, true, callback)
@@ -213,17 +226,4 @@ module.exports = BuildManager =
 				return callback(error) if error?
 				s3Req.resume()
 				s3Req.on "end", callback
-				
-	getOutputFiles: (repo, sha, callback = (error, files) ->) ->
-		prefix = "#{repo}/#{sha}"
-		logger.log prefix: prefix, "listing output files"
-		s3client.list { prefix: prefix }, (error, data) ->
-			return callback(error) if error?
-			files = []
-			for file in data.Contents
-				files.push file.Key.slice(prefix.length + 1)
-			callback null, files
-			
-	getOutputFileStream: (repo, sha, name, callback = (error, res) ->) ->
-		path = "#{repo}/#{sha}/#{name}"
-		s3client.getFile path, callback
+

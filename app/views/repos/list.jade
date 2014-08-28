@@ -20,7 +20,7 @@ block content
 									a(href=repo.html_url)= repo.full_name
 								.col-xs-4.text-right
 									form(action="#{settings.mountPoint}/repos/#{repo.full_name}/hook/destroy", method="POST")
-										a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo.full_name}/builds") View Latest Build
+										a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo.full_name}") View Latest Build
 										| 
 										input(type="hidden", name="_csrf", value=csrfToken)
 										button.btn.btn-danger(type="submit") Turn Off								
