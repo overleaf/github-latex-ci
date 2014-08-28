@@ -21,6 +21,10 @@ module.exports = RepositoryController =
 		url = url.slice(mountPoint.length)
 		request.get({
 			uri: "https://api.github.com#{url}",
+			qs: {
+				client_id: settings.github.client_id
+				client_secret: settings.github.client_secret
+			},
 			headers:
 				"Accept": "application/vnd.github.v3.raw"
 				"User-Agent": userAgent

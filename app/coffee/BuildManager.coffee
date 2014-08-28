@@ -3,9 +3,10 @@ logger = require "logger-sharelatex"
 settings = require "settings-sharelatex"
 async = require "async"
 knox = require "knox"
+yaml = require "js-yaml"
 {db, ObjectId} = require "./mongojs"
 
-{url, mountPoint} = settings.internal.github_latex_ci
+{url, mountPoint, userAgent} = settings.internal.github_latex_ci
 
 s3client = knox.createClient {
 	key:    settings.s3.key
@@ -90,21 +91,88 @@ module.exports = BuildManager =
 
 	_createClsiRequest: (tree, callback = (error, clsiRequest) ->) ->
 		resources = []
+		jobs = []
+		
+		docClassRootResourcePath = null
+		ymlRootResourcePath = null
+		texCompiler = null
+		ymlCompiler = null
+		
+		logger.log tree: tree, "building CLSI request for Github tree"
+		
 		for entry in tree.tree or []
-			resources.push {
-				path: entry.path
-				url:  entry.url.replace(/^https:\/\/api\.github\.com/, url + mountPoint)
-			}
+			do (entry) ->
+				if entry.type == "blob"
+					jobs.push (callback) ->
+						if entry.path.match(/\.tex$/)
+							BuildManager._getBlobContent entry.url, (error, content) ->
+								return callback(error) if error?
+								resources.push {
+									path: entry.path,
+									content: content
+								}
+								
+								if content.match(/^\s*\\documentclass/m)
+									docClassRootResourcePath = entry.path
+									
+								if (m = content.match(/\%\s*!TEX\s*(?:TS-)?program\s*=\s*(.*)$/m))
+									texCompiler = BuildManager._canonicaliseCompiler(m[1])
+									
+								callback()
+						else if entry.path == ".latex.yml"
+							BuildManager._getBlobContent entry.url, (error, content) ->
+								try
+									data = yaml.safeLoad content
+								catch
+									data = {}
+								ymlRootResourcePath = data['root_file']
+								if data['compiler']?
+									ymlCompiler = BuildManager._canonicaliseCompiler(data['compiler'])
+								callback()
+						else
+							resources.push {
+								path: entry.path
+								url:  entry.url.replace(/^https:\/\/api\.github\.com/, url + mountPoint)
+								modified: new Date(0) # The blob sha is a unique id for the content so cache forever
+							}
+							callback()
+		
+		async.series jobs, (error) ->
+			return callback(error) if error?
 			
-		# TODO: Make compiler and rootResourcePath configurable
-		clsiRequest =
-			compile:
-				options:
-					compiler: "pdflatex"
-				rootResourcePath: "main.tex"
-				resources: resources
-	
-		callback null, clsiRequest
+			clsiRequest =
+				compile:
+					options:
+						compiler: ymlCompiler or texCompiler or "pdflatex"
+					rootResourcePath: ymlRootResourcePath or docClassRootResourcePath or "main.tex"
+					resources: resources
+		
+			callback null, clsiRequest
+			
+	_canonicaliseCompiler: (compiler) ->
+		COMPILERS = {
+			'pdflatex': 'pdflatex'
+			'latex':    'latex'
+			'luatex':   'lualatex'
+			'lualatex': 'lualatex'
+			'xetex':    'xelatex'
+			'xelatex':  'xelatex'
+		}
+		return COMPILERS[compiler.toString().trim().toLowerCase()] or "pdflatex"
+		
+	_getBlobContent: (url, callback = (error, content) ->) ->
+		request.get {
+			uri: url,
+			qs: {
+				client_id: settings.github.client_id
+				client_secret: settings.github.client_secret
+			},
+			headers: {
+				"Accept": "application/vnd.github.v3.raw"
+				"User-Agent": userAgent
+			}
+		}, (error, response, body) ->
+			callback error, body
 		
 	_sendClsiRequest: (repo, req, callback = (error, data) ->) ->
 		repo = repo.replace(/\//g, "-")

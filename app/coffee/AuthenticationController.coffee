@@ -33,7 +33,7 @@ module.exports =
 			next()
 		else
 			res.locals.loggedIn = req.loggedIn = false
-			req.ghclient = github.client()
+			req.ghclient = github.client({id: settings.github.client_id, secret: settings.github.client_secret})
 			next()
 				
 	requireLogin: (req, res, next = (error) ->) ->
