@@ -15,6 +15,7 @@ module.exports = RepositoryController =
 				res.render "repos/list",
 					active_repos: repos.filter (r) -> r.webhook
 					other_repos: repos.filter (r) -> !r.webhook
+					csrfToken: req.csrfToken()
 				
 	proxyBlob: (req, res, next) ->
 		url = req.url

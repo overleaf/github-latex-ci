@@ -7,6 +7,11 @@ settings = require "settings-sharelatex"
 express = require "express"
 app = express()
 
+csrf = require("csurf")()
+# We use forms to do POST requests, with a _csrf field. bodyParser takes
+# care of parsing these to req.body._csrf
+bodyParser = require("body-parser")
+
 session    = require('express-session')
 RedisStore = require('connect-redis')(session)
 
@@ -50,14 +55,14 @@ app.get("#{mountPoint}/", IndexController.index)
 app.get("#{mountPoint}/login", AuthenticationController.login)
 app.get("#{mountPoint}/auth",  AuthenticationController.auth)
 
-app.get("#{mountPoint}/repos", AuthenticationController.requireLogin, RepositoryController.list)
+app.get("#{mountPoint}/repos", csrf, AuthenticationController.requireLogin, RepositoryController.list)
 app.get("#{mountPoint}/repos/:owner/:repo/git/blobs/:sha", RepositoryController.proxyBlob)
 
-app.post("#{mountPoint}/repos/:owner/:repo/hook", AuthenticationController.requireLogin, WebHookController.createHook)
-app.post("#{mountPoint}/repos/:owner/:repo/hook/destroy", AuthenticationController.requireLogin, WebHookController.destroyHook)
+app.post("#{mountPoint}/repos/:owner/:repo/hook", bodyParser(), csrf, AuthenticationController.requireLogin, WebHookController.createHook)
+app.post("#{mountPoint}/repos/:owner/:repo/hook/destroy", bodyParser(), csrf, AuthenticationController.requireLogin, WebHookController.destroyHook)
 app.post("#{mountPoint}/events", WebHookController.webHookEvent)
 
-app.get("#{mountPoint}/repos/:owner/:repo/builds", BuildController.listBuilds)
+app.get("#{mountPoint}/repos/:owner/:repo/builds", csrf, BuildController.listBuilds)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", BuildController.showBuild)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/latest/badge.svg", BuildController.latestPdfBadge)
 
@@ -75,7 +80,7 @@ app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/
 		next()
 	, BuildController.downloadOutputFile
 	
-app.post("#{mountPoint}/repos/:owner/:repo/builds/latest", AuthenticationController.requireLogin, BuildController.buildLatestCommit)
+app.post("#{mountPoint}/repos/:owner/:repo/builds/latest", bodyParser(), csrf, AuthenticationController.requireLogin, BuildController.buildLatestCommit)
 
 app.get "#{mountPoint}/status", (req, res, next) ->
 	res.send("github-latex-ci is alive")

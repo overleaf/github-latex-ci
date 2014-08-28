@@ -37,6 +37,7 @@ module.exports = BuildController =
 							builds: builds
 							latestBuild: latestBuild
 							outputFiles: outputFiles
+							csrfToken: req.csrfToken()
 				
 	showBuild: (req, res, next) ->
 		{sha, owner, repo} = req.params

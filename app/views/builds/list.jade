@@ -25,6 +25,7 @@ block content
 		if loggedIn
 			li.pull-right
 				form(action="#{settings.mountPoint}/repos/#{repo}/builds/latest", method="POST")
+					input(type="hidden", name="_csrf", value=csrfToken)
 					input.btn.btn-primary(type="submit", value="Build Now")
 	
 	.tab-content
