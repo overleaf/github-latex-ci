@@ -14,12 +14,17 @@ if !process.env.AWS_ACCESS_KEY? or !process.env.AWS_SECRET_KEY?
 module.exports =
 	internal:
 		github_latex_ci:
-			mountPoint: "/github"
+			mountPoint: ""
 			url: "http://localhost:3021"
 			publicUrl: "http://localhost:3021"
 			host: "localhost"
 			port: 3021
 			userAgent: "sharelatex/github-latex-ci"
+			
+	style:
+		css: "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+		homePageUrl: "/"
+		brandText: "ShareLaTeX Cloud Compiler"
 			
 	apis:
 		clsi:

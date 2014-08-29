@@ -30,6 +30,7 @@ app.set('view engine', 'jade')
 
 app.set("mountPoint", mountPoint)
 app.set("publicUrl", publicUrl)
+app.set("style", settings.style)
 
 # Cookies and sessions.
 yearInMilliseconds = 365 * 24 * 60 * 60 * 1000

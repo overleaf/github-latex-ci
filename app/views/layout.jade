@@ -2,14 +2,14 @@ doctype html
 html
 	head
 		title Github LaTeX CI
-		link(rel="stylesheet", href="https://www.sharelatex.com/stylesheets/style.css")
+		link(rel="stylesheet", href=settings.style.css)
 		script(type="text/javascript", src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
 		script(type="text/javascript", src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
 	body
 		.navbar.navbar-default
 			.container-fluid
 				.navbar-header
-					a(href="https://www.sharelatex.com").navbar-brand
+					a(href="#{settings.style.homePageUrl}").navbar-brand= settings.style.brandText
 				
 				ul.nav.navbar-nav.navbar-right
 					li.subdued
