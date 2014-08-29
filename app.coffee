@@ -1,11 +1,16 @@
 logger = require "logger-sharelatex"
 logger.initialize("github-latex-ci")
 
+metrics = require "metrics-sharelatex"
+metrics.initialize "github-latex-ci"
+
 settings = require "settings-sharelatex"
 {mountPoint, publicUrl} = settings.internal.github_latex_ci
 
 express = require "express"
 app = express()
+
+app.use metrics.http.monitor(logger)
 
 csrf = require("csurf")()
 # We use forms to do POST requests, with a _csrf field. bodyParser takes

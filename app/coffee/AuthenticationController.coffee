@@ -1,6 +1,7 @@
 github = require "octonode"
 settings = require "settings-sharelatex"
 logger = require "logger-sharelatex"
+metrics = require "metrics-sharelatex"
 mountPoint = settings.internal.github_latex_ci.mountPoint
 
 auth = github.auth.config({
@@ -32,11 +33,17 @@ module.exports =
 		if req.session?.token?
 			res.locals.loggedIn = req.loggedIn = true
 			req.ghclient = github.client(req.session.token)
-			next()
 		else
 			res.locals.loggedIn = req.loggedIn = false
 			req.ghclient = github.client({id: settings.github.client_id, secret: settings.github.client_secret})
-			next()
+
+		if !req.ghclient._buildUrl?
+			req.ghclient._buildUrl = req.ghclient.buildUrl
+			req.ghclient.buildUrl = () ->
+				metrics.inc "github-api-requests"
+				req.ghclient._buildUrl.apply(req.ghclient, arguments)
+
+		next()
 				
 	requireLogin: (req, res, next = (error) ->) ->
 		if req.loggedIn

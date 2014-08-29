@@ -1,6 +1,7 @@
 request = require "request"
 logger = require "logger-sharelatex"
 settings = require "settings-sharelatex"
+metrics = require "metrics-sharelatex"
 async = require "async"
 knox = require "knox"
 yaml = require "js-yaml"
@@ -174,6 +175,7 @@ module.exports = BuildManager =
 		return COMPILERS[compiler.toString().trim().toLowerCase()] or "pdflatex"
 		
 	_getBlobContent: (url, callback = (error, content) ->) ->
+		metrics.inc "github-api-requests"
 		request.get {
 			uri: url,
 			qs: {

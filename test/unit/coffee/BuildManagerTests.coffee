@@ -13,6 +13,7 @@ describe "BuildManager", ->
 				s3: { key: "", secret: "", github_latex_ci_bucket: "" }
 			"request": {}
 			"./mongojs": {}
+			"metrics-sharelatex": {}
 			"knox": @knox = createClient: () ->
 			"js-yaml": require("js-yaml") # Slow so only load once
 		@repo = "owner-id/repo-id"

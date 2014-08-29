@@ -1,5 +1,6 @@
 logger = require "logger-sharelatex"
 settings = require "settings-sharelatex"
+metrics = require "metrics-sharelatex"
 request = require "request"
 
 RepositoryManager = require "./RepositoryManager"
@@ -37,6 +38,7 @@ module.exports = RepositoryController =
 	proxyBlob: (req, res, next) ->
 		url = req.url
 		url = url.slice(mountPoint.length)
+		metrics.inc "github-api-requests"
 		request.get({
 			uri: "https://api.github.com#{url}",
 			qs: {
