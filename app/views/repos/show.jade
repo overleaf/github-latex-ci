@@ -15,9 +15,9 @@ block content
 				.modal-content
 					.modal-body
 						h3 Image URL
-						pre #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg
+						pre(style="word-wrap: break-word; word-break: break-all;") #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg
 						h3 Markdown
-						pre [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/output.pdf)
+						pre(style="word-wrap: break-word; word-break: break-all;") [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/output.pdf)
 
 		div.modal.fade#help-modal(tabindex="-1" role="dialog" aria-labelledby="helpModal" aria-hidden="true")
 			.modal-dialog
@@ -53,13 +53,13 @@ block content
 							tr
 								td
 									.row
-										.col-xs-10
+										.col-xs-6
 											- if (build.commit)
 												a(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}")= build.commit.message
 												.small by #{build.commit.author.name} on #{build.commit.author.date}
 											- else
 												| Pending...
-										strong.col-xs-2.text-right
+										strong.col-xs-6.text-right
 											if build.status == "success"
 												a.btn.btn-success(href="#{settings.mountPoint}/repos/#{repo}/builds/#{build.sha}/output/output.pdf") Download PDF
 											else if build.status == "in_progress"
