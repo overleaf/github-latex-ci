@@ -23,8 +23,10 @@ module.exports =
 			
 	style:
 		css: "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-		homePageUrl: "/"
 		brandText: "ShareLaTeX Cloud Compiler"
+		# css: "https://www.sharelatex.com/stylesheets/style.css"
+		# brandText: ""
+		homePageUrl: "/"
 			
 	apis:
 		clsi:
