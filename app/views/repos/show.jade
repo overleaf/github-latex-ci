@@ -13,10 +13,14 @@ block content
 		div.modal.fade#badge-modal(tabindex="-1" role="dialog" aria-labelledby="badgeModal" aria-hidden="true")
 			.modal-dialog
 				.modal-content
+					.modal-header
+						h4 Badge Codes
 					.modal-body
-						h3 Image URL
+						h5 Badge Image URL
 						pre(style="word-wrap: break-word; word-break: break-all;") #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg
-						h3 Markdown
+						h5 Link to Latest Build
+						pre(style="word-wrap: break-word; word-break: break-all;") #{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/output.pdf
+						h5 Markdown
 						pre(style="word-wrap: break-word; word-break: break-all;") [![PDF Status](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/badge.svg)](#{settings.publicUrl}#{settings.mountPoint}/repos/#{repo}/builds/latest/output.pdf)
 
 		div.modal.fade#help-modal(tabindex="-1" role="dialog" aria-labelledby="helpModal" aria-hidden="true")
