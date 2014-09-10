@@ -90,6 +90,7 @@ app.post("#{mountPoint}/repos/:owner/:repo/builds/latest", bodyParser(), csrf, A
 
 app.get "#{mountPoint}/status", (req, res, next) ->
 	res.send("github-latex-ci is alive")
+	req.session.destroy()
 
 port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host
