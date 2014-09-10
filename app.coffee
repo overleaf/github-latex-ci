@@ -38,7 +38,7 @@ app.set("publicUrl", publicUrl)
 app.set("style", settings.style)
 
 # Cookies and sessions.
-yearInMilliseconds = 365 * 24 * 60 * 60 * 1000
+fiveDaysInMilliseconds = 5 * 24 * 60 * 60 * 1000
 app.use(session(
 	store: new RedisStore({
 		host: settings.redis.web.host,
@@ -49,7 +49,7 @@ app.use(session(
 	name: settings.cookieName,
 	cookie:
 		domain: settings.cookieDomain
-		maxAge: 1 * yearInMilliseconds
+		maxAge: fiveDaysInMilliseconds
 		secure: settings.secureCookie
 	proxy: settings.behindProxy
 ))
