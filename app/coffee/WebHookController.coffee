@@ -28,7 +28,6 @@ module.exports = WebHookController =
 				RepositoryManager.deleteRepo repo_name, (error) ->
 					return next(error) if error?
 					logger.log repo: repo_name, hook_id: repo.hook_id, "destroyed web hook"
-					req.session.destroy()
 					res.redirect("#{mountPoint}/repos")
 					
 	webHookEvent: (req, res, next) ->
