@@ -56,7 +56,7 @@ app.use(session(
 
 destroySession = (req, res, next) ->
 	if req.session?
-		req.session.destory()
+		req.session.destroy()
 	next()
 
 app.use(AuthenticationController.setupLoginStatus)
