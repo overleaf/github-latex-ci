@@ -54,6 +54,10 @@ app.use(session(
 	proxy: settings.behindProxy
 ))
 
+destroySession = (req, res, next) ->
+	res.session?.destory()
+	next()
+
 app.use(AuthenticationController.setupLoginStatus)
 
 app.get("#{mountPoint}/", IndexController.index)
@@ -67,7 +71,7 @@ app.get("#{mountPoint}/repos/:owner/:repo/git/blobs/:sha", RepositoryController.
 
 app.post("#{mountPoint}/repos/:owner/:repo/hook", bodyParser(), csrf, AuthenticationController.requireLogin, WebHookController.createHook)
 app.post("#{mountPoint}/repos/:owner/:repo/hook/destroy", bodyParser(), csrf, AuthenticationController.requireLogin, WebHookController.destroyHook)
-app.post("#{mountPoint}/events", WebHookController.webHookEvent)
+app.post("#{mountPoint}/events", destroySession, WebHookController.webHookEvent)
 
 app.get("#{mountPoint}/repos/:owner/:repo/builds/:sha", BuildController.showBuild)
 app.get("#{mountPoint}/repos/:owner/:repo/builds/latest/badge.svg", BuildController.latestPdfBadge)
@@ -88,9 +92,8 @@ app.get regex = new RegExp("^#{mountPoint.replace('/', '\/')}\/repos\/([^\/]+)\/
 	
 app.post("#{mountPoint}/repos/:owner/:repo/builds/latest", bodyParser(), csrf, AuthenticationController.requireLogin, BuildController.buildLatestCommit)
 
-app.get "#{mountPoint}/status", (req, res, next) ->
+app.get "#{mountPoint}/status", destroySession, (req, res, next) ->
 	res.send("github-latex-ci is alive")
-	req.session.destroy()
 
 port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host
