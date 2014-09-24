@@ -35,3 +35,14 @@ Run it:
 ```
 $ grunt run
 ```
+
+FAQ
+---
+
+Q. Can I compile private repositories?
+
+A. No. To keep things simple, we only support public repositories. These do not need any authentication logic, since we can fetch the files without needing to authentication ourselves to github. To support private repositories we would need to keep a record of your github OAuth login, and then provide our own login/authentication system to make sure only you could view the PDF. This is beyond the scope of the project at the moment.
+
+Q. Do you support package X?
+
+A. If it's not included in the compile environment by default, you can upload a package to your GitHub repository and the ShareLaTeX compiler will find it.
