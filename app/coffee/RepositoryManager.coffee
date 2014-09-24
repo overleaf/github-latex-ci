@@ -49,10 +49,10 @@ module.exports = RepositoryManager =
 		ghclient.me().orgs callback
 		
 	_getOrgRepos: (ghclient, org, callback = (error, repos) ->) ->
-		ghclient.org(org).repos type: "public", callback
+		ghclient.org(org).repos type: "public", page: 1, per_page: 200, callback
 		
 	_getPersonalRepos: (ghclient, callback = (error, repos) ->) ->
-		ghclient.me().repos type: "public", callback
+		ghclient.me().repos type: "public", page: 1, per_page: 200, callback
 		
 	saveWebHook: (repo, id, callback = (error) ->) ->
 		db.githubRepos.update({
