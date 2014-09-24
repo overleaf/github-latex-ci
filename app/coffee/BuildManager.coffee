@@ -51,7 +51,7 @@ module.exports = BuildManager =
 			return callback(error) if error?
 			
 			jobs = []
-			for file in outputFiles
+			for file in outputFiles or []
 				do (file) ->
 					jobs.push (callback) ->
 						BuildManager._saveOutputFileToS3 repo, sha, file.url, callback
