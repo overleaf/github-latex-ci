@@ -17,11 +17,15 @@ csrf = require("csurf")()
 # care of parsing these to req.body._csrf
 bodyParser = require("body-parser")
 
+
+redis = require("redis-sharelatex")
+rclient = redis.createClient(settings.redis.web)
+
 session    = require('express-session')
 RedisStore = require('connect-redis')(session)
 
-redis = require("redis-sharelatex")
-rclient = redis.createClient(Settings.redis.web)
+sessionStore = new RedisStore(client:rclient)
+
 
 IndexController = require "./app/js/IndexController"
 AuthenticationController = require "./app/js/AuthenticationController"
@@ -39,11 +43,7 @@ app.set("style", settings.style)
 # Cookies and sessions.
 fiveDaysInMilliseconds = 5 * 24 * 60 * 60 * 1000
 app.use(session(
-	store: new RedisStore({
-		host: settings.redis.web.host,
-		port: settings.redis.web.port,
-		pass: settings.redis.web.password
-	})
+	store:sessionStore
 	secret: settings.security.sessionSecret,
 	name: settings.cookieName,
 	cookie:
