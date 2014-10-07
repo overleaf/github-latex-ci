@@ -33,7 +33,7 @@
     "metrics-sharelatex": "git+https://github.com/sharelatex/metrics-sharelatex#v1.0.0",
     "mongojs": "^0.14.0",
     "octonode": "^0.6.4",
-    "redis": "^0.12.1",
+    "redis-sharelatex": "~0.0.4",
     "request": "^2.40.0",
     "settings-sharelatex": "git+https://github.com/sharelatex/settings-sharelatex.git#v1.0.0"
   }

@@ -20,9 +20,8 @@ bodyParser = require("body-parser")
 session    = require('express-session')
 RedisStore = require('connect-redis')(session)
 
-redis = require('redis')
-rclient = redis.createClient(settings.redis.web.port, settings.redis.web.host)
-rclient.auth(settings.redis.web.password)
+redis = require("redis-sharelatex")
+rclient = redis.createClient(Settings.redis.web)
 
 IndexController = require "./app/js/IndexController"
 AuthenticationController = require "./app/js/AuthenticationController"
