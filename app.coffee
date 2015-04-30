@@ -99,4 +99,5 @@ port = settings.internal.github_latex_ci.port
 host = settings.internal.github_latex_ci.host
 app.listen port, host, (error) ->
 	throw error if error?
-	logger.log "github-latex-ci listening on #{host}:#{port}"
+	logger.info "github-latex-ci starting up, listening on #{host}:#{port}"
+
