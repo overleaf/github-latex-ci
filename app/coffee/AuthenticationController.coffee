@@ -30,15 +30,16 @@ module.exports =
 				res.redirect "#{mountPoint}/repos"
 			
 	setupLoginStatus: (req, res, next = (error) ->) ->
+
+		baseRequest = request.defaults({
+			headers: {'Accept':'application/vnd.github.moondragon-preview+json'}
+		})
 		if req.session?.token?
 			res.locals.loggedIn = req.loggedIn = true
-			req.ghclient = github.client(req.session.token)
+			req.ghclient = github.client(req.session.token, {request:request})
 		else
 			res.locals.loggedIn = req.loggedIn = false
 
-			baseRequest = request.defaults({
-				headers: {'Accept':'application/vnd.github.moondragon-preview+json'}
-			})
 			req.ghclient = github.client({id: settings.github.client_id, secret: settings.github.client_secret},{request:baseRequest})
 
 		if !req.ghclient._buildUrl?
