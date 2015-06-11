@@ -1,41 +1,36 @@
 - if (typeof(build) == "undefined")
-	- var text = "Unknown";
-	- var color1 = "#999999";
-	- var color2 = "#666666";
-	- var width = 92;
+	- var text = "unknown";
+	- var color = "#9f9f9f";
+	- var width = 61;
 - else if (build.status == "in_progress")
-	- var text = "Building";
-	- var color1 = "#999999";
-	- var color2 = "#666666";
-	- var width = 84;
+	- var text = "building";
+	- var color = "#dfb317";
+	- var width = 54;
 - else if (build.status == "success")
-	- var text = "Built";
-	- var color1 = "#90D143";
-	- var color2 = "#5D9E10";
-	- var width = 60;
+	- var text = "success";
+	- var color = "#4c1";
+	- var width = 54;
 - else
-	- var text = "Failed";
-	- var color1 = "#D15443";
-	- var color2 = "#9E2110";
-	- var width = 72;
+	- var text = "failed";
+	- var color = "#e05d44";
+	- var width = 41;
 
-svg(width="#{width + 56}" height="28" xmlns="http://www.w3.org/2000/svg")
-	style(type="text/css").
-		text{alignment-baseline:middle;font-family:Arial,sans-serif;font-size:16px}
-		
-	defs
-		linearGradient(id="grad1" x1="0%" y1="0%" x2="0%" y2="100%")
-			stop(offset="0%" style="stop-color:#6F6F6F;stop-opacity:1")
-			stop(offset="100%" style="stop-color:#3C3C3C;stop-opacity:1")
-		linearGradient(id="grad2" x1="0%" y1="0%" x2="0%" y2="100%")
-			stop(offset="0%" style="stop-color:#{color1};stop-opacity:1")
-			stop(offset="100%" style="stop-color:#{color2};stop-opacity:1")
-	
-	rect(x="0" y="0" rx="5" ry="5" width="56" height="28" fill="url(#grad1)")
-	rect(x="10" y="0" width="46" height="28" fill="url(#grad1)")
-	rect(x="56" y="0" rx="5" ry="5" width="#{width}" height="28" fill="url(#grad2)")
-	rect(x="56" y="0" width="#{width - 10}" height="28" fill="url(#grad2)")
-	text(x="12" y="16" style="fill:#000;opacity:0.75;") PDF
-	text(x="12" y="15" style="fill:#fff;") PDF
-	text(x="68" y="16" style="fill:#000;opacity:0.75;") #{text}
-	text(x="68" y="15" style="fill:#fff;") #{text}
+svg(xmlns="http://www.w3.org/2000/svg", width="#{width + 28}", height="20")
+
+	lineargradient#smooth(x2="0", y2="100%")
+		stop(offset="0", stop-color="#bbb", stop-opacity=".1")
+		stop(offset="1", stop-opacity=".1")
+
+	mask#round
+		rect(width="#{width + 28}", height="20", rx="3", fill="#fff")
+
+	g(mask="url(#round)")
+		rect(width="28", height="20", fill="#555")
+		rect(x="28", width="#{width}", height="20", fill="#{color}")
+		rect(width="#{width + 28}", height="20", fill="url(#smooth)")
+
+	g(fill="#fff", text-anchor="middle", font-family="DejaVu Sans,Verdana,Geneva,sans-serif", font-size="11")
+		text(x="14", y="15", fill="#010101", fill-opacity=".3") pdf
+		text(x="14", y="14") pdf
+		text(x="#{28 + width / 2 - 1}", y="15", fill="#010101", fill-opacity=".3") #{text}
+		text(x="#{28 + width / 2 - 1}", y="14") #{text}
