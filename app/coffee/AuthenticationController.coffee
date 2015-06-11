@@ -36,7 +36,7 @@ module.exports =
 		})
 		if req.session?.token?
 			res.locals.loggedIn = req.loggedIn = true
-			req.ghclient = github.client(req.session.token, {request:request})
+			req.ghclient = github.client(req.session.token, {request:baseRequest})
 		else
 			res.locals.loggedIn = req.loggedIn = false
 
