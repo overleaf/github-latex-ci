@@ -21,7 +21,8 @@ module.exports = BuildManager =
 			return callback(error) if error?
 			# Build in the background
 			BuildManager.buildCommit ghclient, repo, sha, (error) ->
-				logger.error err:error, repo: repo, sha: sha, "background build failed"
+				if error?
+					logger.error err:error, repo: repo, sha: sha, "background build failed"
 			callback()
 
 	buildCommit: (ghclient, repo, sha, callback = (error) ->) ->
