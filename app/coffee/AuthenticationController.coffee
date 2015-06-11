@@ -2,8 +2,8 @@ github = require "octonode"
 settings = require "settings-sharelatex"
 logger = require "logger-sharelatex"
 metrics = require "metrics-sharelatex"
+request = require "request"
 mountPoint = settings.internal.github_latex_ci.mountPoint
-
 auth = github.auth.config({
 	id:     settings.github.client_id,
 	secret: settings.github.client_secret
@@ -35,7 +35,11 @@ module.exports =
 			req.ghclient = github.client(req.session.token)
 		else
 			res.locals.loggedIn = req.loggedIn = false
-			req.ghclient = github.client({id: settings.github.client_id, secret: settings.github.client_secret})
+
+			baseRequest = request.defaults({
+				headers: {'Accept':'application/vnd.github.moondragon-preview+json'}
+			})
+			req.ghclient = github.client({id: settings.github.client_id, secret: settings.github.client_secret},{request:baseRequest})
 
 		if !req.ghclient._buildUrl?
 			req.ghclient._buildUrl = req.ghclient.buildUrl

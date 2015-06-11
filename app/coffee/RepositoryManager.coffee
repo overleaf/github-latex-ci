@@ -6,28 +6,21 @@ WebHookManager = require "./WebHookManager"
 
 module.exports = RepositoryManager =
 	gitReposOnGithub: (ghclient, callback = (error, repos) ->) ->
-		jobs = []
-		repos = []
-		
-		jobs.push (callback) ->
-			RepositoryManager._getPersonalRepos ghclient, (error, personalRepos) ->
+		pageSize = 100
+
+		populateRepos = (page = 1, repos = [], cb)->
+			ghclient.me().repos page: page, per_page: pageSize, (error, myRepos) ->
 				return callback(error) if error?
-				repos.push.apply(repos, personalRepos)
-				callback()
-		
-		RepositoryManager._getOrgs ghclient, (error, orgs) ->
+				repos = repos.concat(myRepos)
+				hasMore = myRepos.length == pageSize
+				if hasMore
+					populateRepos(++page, repos, cb)
+				else
+					cb(error, repos)
+
+		populateRepos 1, [], (err, repos)->
 			return callback(error) if error?
-			for org in orgs
-				do (org) ->
-					jobs.push (callback) ->
-						RepositoryManager._getOrgRepos ghclient, org.login, (error, orgRepos) ->
-							return callback(error) if error?
-							repos.push.apply(repos, orgRepos)
-							callback()
-		
-			async.series jobs, (error) ->
-				return callback(error) if error?
-				callback null, repos
+			callback null, repos
 				
 	injectWebHookStatus: (repos, callback = (error, repos) ->) ->
 		RepositoryManager.getRepos repos.map((r) -> r.full_name), (error, webhooks) ->
@@ -47,12 +40,6 @@ module.exports = RepositoryManager =
 		
 	_getOrgs: (ghclient, callback = (error, orgs) ->) ->
 		ghclient.me().orgs callback
-		
-	_getOrgRepos: (ghclient, org, callback = (error, repos) ->) ->
-		ghclient.org(org).repos type: "public", page: 1, per_page: 200, callback
-		
-	_getPersonalRepos: (ghclient, callback = (error, repos) ->) ->
-		ghclient.me().repos type: "public", page: 1, per_page: 200, callback
 		
 	saveWebHook: (repo, id, callback = (error) ->) ->
 		db.githubRepos.update({
