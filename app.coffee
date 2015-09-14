@@ -101,3 +101,9 @@ app.listen port, host, (error) ->
 	throw error if error?
 	logger.info "github-latex-ci starting up, listening on #{host}:#{port}"
 
+if global.gc?
+	gcTimer = setInterval () ->
+		global.gc()
+		logger.log process.memoryUsage(), "global.gc"
+	, 3 * oneMinute = 60 * 1000
+	gcTimer.unref()
