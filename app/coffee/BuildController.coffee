@@ -2,6 +2,8 @@ BuildManager = require "./BuildManager"
 RepositoryManager = require "./RepositoryManager"
 settings = require "settings-sharelatex"
 mountPoint = settings.internal.github_latex_ci.mountPoint
+mime = require('mime')
+
 
 module.exports = BuildController =
 	buildLatestCommit: (req, res, next) ->
@@ -38,6 +40,7 @@ module.exports = BuildController =
 		repo = "#{owner}/#{repo}"
 		BuildManager.getOutputFileStream repo, sha, path, (error, s3res) ->
 			return next(error) if error?
+			res.header "Content-Type", mime.lookup(path)
 			res.header("Content-Length", s3res.headers['content-length'])
 			s3res.pipe(res)
 			
