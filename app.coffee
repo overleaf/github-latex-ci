@@ -4,6 +4,7 @@ logger.initialize("github-latex-ci")
 metrics = require "metrics-sharelatex"
 metrics.initialize "github-latex-ci"
 metrics.memory.monitor(logger)
+metrics.memory.Check(logger)
 
 settings = require "settings-sharelatex"
 {mountPoint, publicUrl} = settings.internal.github_latex_ci
