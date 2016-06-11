@@ -54,8 +54,12 @@ module.exports = BuildManager =
 			jobs = []
 			for file in outputFiles or []
 				do (file) ->
-					jobs.push (callback) ->
-						BuildManager._saveOutputFileToS3 repo, sha, file.url, callback
+					jobs.push (cb) ->
+						if !file.url?
+							cb()
+						else
+							BuildManager._saveOutputFileToS3 repo, sha, file.url, cb
+
 						
 			async.parallelLimit jobs, 5, callback
 			
@@ -136,11 +140,14 @@ module.exports = BuildManager =
 								callback()
 						else if entry.path == ".latex.yml"
 							BuildManager._getBlobContent entry.url, (error, content) ->
-								try
-									data = yaml.safeLoad content
-								catch
+								if error?
 									data = {}
-								ymlRootResourcePath = data['root_file']
+								else
+									try
+										data = yaml.safeLoad content
+									catch
+										data = {}
+								ymlRootResourcePath = data?['root_file']
 								if data['compiler']?
 									ymlCompiler = BuildManager._canonicaliseCompiler(data['compiler'])
 								callback()
@@ -213,6 +220,8 @@ module.exports = BuildManager =
 		
 	_saveOutputFileToS3: (repo, sha, sourceUrl, callback = (error) ->) ->
 		m = sourceUrl.match(/\/project\/[^\/]+\/output\/(.*)$/)
+		if !m? or m.length < 1
+			return callback()
 		name = m[1]
 		name = "#{repo}/#{sha}/#{name}"
 
