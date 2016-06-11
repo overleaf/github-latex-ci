@@ -219,10 +219,10 @@ module.exports = BuildManager =
 		}, callback)
 		
 	_saveOutputFileToS3: (repo, sha, sourceUrl, callback = (error) ->) ->
-		m = sourceUrl.match(/\/project\/[^\/]+\/output\/(.*)$/)
+		m = sourceUrl.match(/\/project\/[a-zA-Z0-9_-]+(\/build\/[a-f0-9-]+)?\/output\/(.*)$/)
 		if !m? or m.length < 1
 			return callback()
-		name = m[1]
+		name = m[2]
 		name = "#{repo}/#{sha}/#{name}"
 
 		logger.log url: sourceUrl, location: name, "saving output file"
